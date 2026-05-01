@@ -94,6 +94,14 @@ const DotField = memo(({
     }
 
     function onMouseMove(e) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      // Recalculate offset on each move to handle scroll/resize
+      const rect = canvas.parentElement.getBoundingClientRect();
+      sizeRef.current.offsetX = rect.left + window.scrollX;
+      sizeRef.current.offsetY = rect.top + window.scrollY;
+      
       const s = sizeRef.current;
       mouseRef.current.x = e.pageX - s.offsetX;
       mouseRef.current.y = e.pageY - s.offsetY;
@@ -286,6 +294,23 @@ ctx.arc(drawX, drawY, rad, 0, TWO_PI);
   useEffect(() => {
     rebuildRef.current?.();
   }, [dotRadius, dotSpacing]);
+
+  // Keep animation and event listeners active
+  useEffect(() => {
+    const handleScroll = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      sizeRef.current.offsetX = rect.left + window.scrollX;
+      sizeRef.current.offsetY = rect.top + window.scrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <div className="dot-field-container" {...rest}>

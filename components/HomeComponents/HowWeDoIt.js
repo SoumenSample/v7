@@ -32,15 +32,16 @@ export default function ITSupportSection() {
 
   return (
     
-    <section className="relative bg-black text-white pt-12 px-6 z-0 overflow-hidden">
+    <section className="relative bg-black text-white pt-12 px-6 z-0 overflow-hidden min-h-screen">
+      {/* DotField background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <DotField
+          gradientFrom="rgba(6, 182, 212, 0.9)"   // cyan-500
+          gradientTo="rgba(6, 182, 212, 0.4)"     // lighter cyan
+        />
+      </div>
 
-      <div className="max-w-6xl mx-auto">
-              <div className="absolute inset-0 z-1">
-<DotField
-  gradientFrom="rgba(6, 182, 212, 0.9)"   // cyan-500
-  gradientTo="rgba(6, 182, 212, 0.4)"     // lighter cyan
-/>
-</div>
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Headings */}
         <div className="text-center mb-20">
           <h2 className="text-4xl font-bold mb-4">How We Do It</h2>
