@@ -130,7 +130,7 @@ export default function QuotationPage() {
             </thead>
 
             {/* Body */}
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-gray-900/50">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-gray-50 dark:bg-white/5">
               {data.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
@@ -147,7 +147,7 @@ export default function QuotationPage() {
                 </tr>
               ) : (
                 data.map((q: any, index: number) => (
-                  <tr key={q._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+                  <tr key={q._id} className="hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
 
                     {/* Index */}
                     <td className="px-5 py-4 whitespace-nowrap">
@@ -202,7 +202,7 @@ export default function QuotationPage() {
 
         {/* Footer */}
         {data.length > 0 && (
-          <div className="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
+          <div className="px-5 py-3 bg-gray-50 dark:bg-white/5 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
             Showing {data.length} quotation{data.length !== 1 ? "s" : ""}
           </div>
         )}

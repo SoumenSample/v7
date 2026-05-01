@@ -4,12 +4,14 @@ import React, { forwardRef, useRef } from "react"
 import {
   FaLaptopCode, FaMobileAlt, FaCode,
   FaPalette, FaBullhorn, FaBrush, FaBrain,
+  FaBars,
 } from "react-icons/fa";
 import { SiGoogleanalytics } from "react-icons/si";
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
 import { Contact } from "lucide-react";
 import { size } from "zod";
+import { BackgroundBeams } from "./ui/background-beams";
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -46,7 +48,8 @@ export default function AnimatedBeamMultipleOutputDemo({
   // const div8Ref = useRef<HTMLDivElement>(null)
   // const div9Ref = useRef<HTMLDivElement>(null)
 
-  return (
+  return (<>
+    <BackgroundBeams />
     <div
       className={cn(
         "absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden p-8",
@@ -54,19 +57,20 @@ export default function AnimatedBeamMultipleOutputDemo({
       )}
       ref={containerRef}
     >
+      
       <div className="flex size-full flex-row items-center justify-between gap-10">
         <div className="flex flex-col justify-center gap-2 py-6">
-          <Circle ref={div1Ref}>
-            <FaBrain className="text-cyan-400" />
+          <Circle ref={div1Ref} className="bg-cyan-500 border-none">
+            <FaBrain className="text-black" />
           </Circle>
-          <Circle ref={div2Ref}>
-            <FaMobileAlt className="text-cyan-400"  />
+          <Circle ref={div2Ref} className="bg-cyan-500 border-none">
+            <FaMobileAlt className="text-black"  />
           </Circle>
-          <Circle ref={div3Ref}>
-            <FaLaptopCode className="text-cyan-400"  />
+          <Circle ref={div3Ref} className="bg-cyan-500 border-none">
+            <FaLaptopCode className="text-black"  />
           </Circle>
-          <Circle ref={div4Ref}>
-            <FaPalette className="text-cyan-400" />
+          <Circle ref={div4Ref} className="bg-cyan-500 border-none">
+            <FaCode className="text-black" />
           </Circle>
        
         </div>
@@ -127,6 +131,7 @@ export default function AnimatedBeamMultipleOutputDemo({
         toRef={div7Ref}
       />
     </div>
+    </>
   )
 }
 

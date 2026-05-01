@@ -193,13 +193,23 @@ const { ref: bottomRef, inView: bottomInView } = useInView({
 });
 
   return (
-    <main className="relative " style={{ background: "#000000" }}>
+    <main className="relative" style={{ background: "#000000" }}>
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden
         style={{
           background:
             "radial-gradient(circle at 50% 50%, rgba(14,186,199,0.18), transparent 50%)",
+        }}
+      />
+
+      <div
+        className="absolute top-0 left-0 w-full pointer-events-none"
+        aria-hidden
+        style={{
+          height: "120px",
+          zIndex: 1,
+          background: "linear-gradient(to bottom, #030508 0%, #000000 100%)",
         }}
       />
 

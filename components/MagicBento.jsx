@@ -22,8 +22,13 @@ const cardData = [
   { color: '#120F17', title: 'Our Vision',     description: 'To become a global leader in digital transformation, setting new standards in web, app, and software development through innovation, excellence, and client success.',       label: ''     },
   { color: '#120F17', title: 'At Cyberspace Works, we combine innovation, design, and technology to create digital solutions that drive real results.', description: 'Our team of experts specializes in web, app, and software development—empowering businesses to grow smarter, faster, and stronger. With a focus on user experience, performance, and reliability, we turn complex challenges into seamless digital experiences that deliver measurable success.',    label: ''     },
   { color: '#120F17', title: 'Automation',    description: 'Streamline workflows',        label: 'Efficiency'   },
-  { color: '#120F17', title: 'We organize all your Scattered Ideas.',   description: '',      label: '' },
-  { color: '#120F17', title: '',      description: '', label: 'We’re Borderless.'   }
+
+  { color: '#120F17', title: 'We Organize All Your Scattered Ideas.',   description: '',      label: '' },
+  { color: '#120F17', title: 'We’re Borderless.',      description: '', label: ''   },
+
+  // { color: '#120F17', title: 'We organize all your Scattered Ideas.',   description: '',      label: '' },
+  // { color: '#120F17', title: '',      description: '', label: 'We’re Borderless.'   }
+
 ];
 
 const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
@@ -400,7 +405,7 @@ const ParticleCard = ({
 };
 
 // Replace GlowingStarsBackgroundWrapped with a hover-aware version
-const GlowingStarsBackgroundWrapped = ({ isHovered }) => (
+const GlowingStarsBackgroundWrapped = ({ isHovered = false }) => (
   <div
     style={{
       position: 'absolute',
@@ -508,64 +513,74 @@ const BackgroundBeamsBackground = () => (
   </div>
 );
 // In your component file, create a wrapper:
-const CobeBackground = () => (
-  <div style={{
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}>
-    <div style={{ width: 300, height: 300 }}>
-      <Cobe />
+// ── CobeBackground ──
+const CobeBackground = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 80);
+    return () => {
+      clearTimeout(t);
+      setMounted(false);
+    };
+  }, []);
+
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 1,
+      pointerEvents: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden',
+    }}>
+      {mounted && (
+        <div style={{ width: '300px', height: '300px', flexShrink: 0 }}>
+          <Cobe />
+        </div>
+      )}
     </div>
-  </div>
-);
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared card content
-// ─────────────────────────────────────────────────────────────────────────────
-const CardContent = ({ card, isFirst, isThird, isFourth, isFifth, isSixth, hideDescription = false, hideHeader = false }) => (
+  );
+};
+
+// ── CardContent — only change is adding cobeKey to the isSixth line ──
+const CardContent = ({
+  card, isFirst, isThird, isFourth, isFifth, isSixth,
+  hideDescription = false, hideHeader = false,
+  isFifthHovered = false, cobeKey,
+}) => (
   <>
-    {/* Render animated backgrounds after children so particles are above */}
     <div className="magic-bento-card__text" style={{ position: 'relative', zIndex: 2, pointerEvents: 'none' }}>
       {!hideHeader && (
         <>
           <div className="magic-bento-card__header" style={{ position: 'relative', zIndex: 2 }}>
             <div className="magic-bento-card__label">{card.label}</div>
           </div>
-          <div className="magic-bento-card__content" style={{ position: 'relative', zIndex: 2 }}>
+          <div className={`magic-bento-card__content ${isThird ? "flex flex-col gap-8 " : ""}`}>
             <h2 className="magic-bento-card__title">{card.title}</h2>
             {!hideDescription && (
-              <p
-  className={`magic-bento-card__description ${
-    isFifth ? "animate-text-reveal" : ""
-  }`}
->
-  {card.description}
-</p>
+              <p className={`magic-bento-card__description ${isFifth ? 'animate-text-reveal' : ''}`}>
+                {card.description}
+              </p>
             )}
           </div>
         </>
       )}
     </div>
-    {/* Backgrounds rendered after content so particles are above */}
-    {/* import SpotlightCard from './SpotlightCard'; */}
-  
 
-    {isFirst  && <DottedGlowBackground/>}
+    {isFirst  && <DottedGlowBackground />}
     {isThird  && <BackgroundBeamsBackground />}
     {isFourth && <AnimatedBeamMultipleOutputDemo />}
-    {isFifth  && <GlowingStarsBackgroundWrapped />}
-    {isSixth && <CobeBackground/>}
+    {isFifth  && <GlowingStarsBackgroundWrapped isHovered={isFifthHovered} />}
+    {isSixth  && <CobeBackground key={cobeKey} />}
   </>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MagicBento
-// ─────────────────────────────────────────────────────────────────────────────
+// ── MagicBento — add cobeKey state and pass it through ──
 const MagicBento = ({
   textAutoHide = true, enableStars = true, enableSpotlight = true,
   enableBorderGlow = true, disableAnimations = false,
@@ -575,6 +590,13 @@ const MagicBento = ({
   const gridRef = useRef(null);
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
+  const [isFifthHovered, setIsFifthHovered] = useState(false);
+  const [cobeKey, setCobeKey] = useState(0); // ✅ forces Cobe remount after layout
+
+  useEffect(() => {
+    const t = setTimeout(() => setCobeKey(k => k + 1), 120);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <>
@@ -589,14 +611,14 @@ const MagicBento = ({
       )}
       <BentoCardGrid gridRef={gridRef}>
         {cardData.map((card, index) => {
-          const isFirst  = index === 0 || index === 1; // DotField
-          const isThird  = index === 2;                 // BackgroundBeams
-          const isFourth = index === 3;                 // AnimatedBeam
-          const isFifth  = index === 4;  
-          const isSixth =index ===5;        // GlowingStars
+          const isFirst  = index === 0 || index === 1;
+          const isThird  = index === 2;
+          const isFourth = index === 3;
+          const isFifth  = index === 4;
+          const isSixth  = index === 5;
 
           const isMission = index === 0;
-          const isVision = index === 1;
+          const isVision  = index === 1;
           const baseClassName = `magic-bento-card ${isMission ? 'magic-bento-card--mission' : ''} ${isVision ? 'magic-bento-card--vision' : ''} ${textAutoHide ? 'magic-bento-card--text-autohide' : ''} ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''}`;
           const cardStyle = {
             backgroundColor: 'rgba(18, 15, 23, 0.7)',
@@ -608,35 +630,41 @@ const MagicBento = ({
 
           if (enableStars) {
             return (
-              <ParticleCard
+              <div
                 key={index}
-                className={baseClassName}
-                style={cardStyle}
-                disableAnimations={shouldDisableAnimations}
-                particleCount={particleCount}
-                glowColor={glowColor}
-                enableTilt={enableTilt}
-                clickEffect={clickEffect}
-                enableMagnetism={enableMagnetism}
+                onMouseEnter={() => { if (isFifth) setIsFifthHovered(true); }}
+                onMouseLeave={() => { if (isFifth) setIsFifthHovered(false); }}
               >
-                 <SpotlightCard
-    className="custom-spotlight-card"
-    spotlightColor="rgba(0, 229, 255, 0.2)"
-    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
-  >
-    <CardContent
-      card={card}
-      isFirst={isFirst}
-      isThird={isThird}
-      isFourth={isFourth}
-      isFifth={isFifth}
-      isSixth={isSixth}
-      hideDescription={isFourth}
-      hideHeader={isFourth}
-    />
-  </SpotlightCard>
-              </ParticleCard>
-            
+                <ParticleCard
+                  className={baseClassName}
+                  style={cardStyle}
+                  disableAnimations={shouldDisableAnimations}
+                  particleCount={particleCount}
+                  glowColor={glowColor}
+                  enableTilt={enableTilt}
+                  clickEffect={clickEffect}
+                  enableMagnetism={enableMagnetism}
+                >
+                  <SpotlightCard
+                    className="custom-spotlight-card"
+                    spotlightColor="rgba(0, 229, 255, 0.2)"
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
+                  >
+                    <CardContent
+                      card={card}
+                      isFirst={isFirst}
+                      isThird={isThird}
+                      isFourth={isFourth}
+                      isFifth={isFifth}
+                      isSixth={isSixth}
+                      hideDescription={isFourth}
+                      hideHeader={isFourth}
+                      isFifthHovered={isFifth ? isFifthHovered : false}
+                      cobeKey={isSixth ? cobeKey : undefined}
+                    />
+                  </SpotlightCard>
+                </ParticleCard>
+              </div>
             );
           }
 
@@ -645,6 +673,8 @@ const MagicBento = ({
               key={index}
               className={baseClassName}
               style={cardStyle}
+              onMouseEnter={() => { if (isFifth) setIsFifthHovered(true); }}
+              onMouseLeave={() => { if (isFifth) setIsFifthHovered(false); }}
               ref={el => {
                 if (!el) return;
                 const handleMouseMove = e => {
@@ -684,6 +714,8 @@ const MagicBento = ({
                 isSixth={isSixth}
                 hideDescription={isFourth}
                 hideHeader={isFourth}
+                isFifthHovered={isFifth ? isFifthHovered : false}
+                cobeKey={isSixth ? cobeKey : undefined}
               />
             </div>
           );

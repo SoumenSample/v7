@@ -109,10 +109,10 @@ export function NavMain({ items }) {
                 asChild
                 tooltip={item.title}
                 className={cn(
-                  "hover:ring-1 hover:ring-border/70 dark:hover:ring-white hover:ring-inset hover:!bg-transparent",
+                  "hover:ring-1 hover:ring-border/70 hover:ring-inset",
                   pathname === item.url
-                    ? "bg-foreground text-background dark:bg-white dark:text-black"
-                    : ""
+                    ? "bg-slate-200 text-slate-900 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-700"
+                    : "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                 )}
               >
                 <a href={item.url}>

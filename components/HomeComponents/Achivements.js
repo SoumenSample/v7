@@ -333,9 +333,9 @@ if (ctx4) {
         <div
           className="absolute inset-0 pointer-events-none"
           aria-hidden
-          style={{
-            background: "radial-gradient(circle at 50% 50%, rgba(14,186,199,0.18), transparent 60%)",
-          }}
+          // style={{
+          //   background: "radial-gradient(circle at 50% 50%, rgba(14,186,199,0.18), transparent 60%)",
+          // }}
         />
         <div className="px-6 pt-15 relative z-10">
           <div  className=" max-w-7xl mx-auto">

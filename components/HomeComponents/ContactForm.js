@@ -411,10 +411,10 @@ const ContactSection = () => {
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
-        style={{
-          background:
-            "radial-gradient(circle at 60% 50%, rgba(14,186,199,0.45), transparent 40%)",
-        }}
+        // style={{
+        //   background:
+        //     "radial-gradient(circle at 60% 50%, rgba(14,186,199,0.45), transparent 40%)",
+        // }}
       />
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 relative z-10">

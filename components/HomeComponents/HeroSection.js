@@ -63,7 +63,7 @@ function drawStars() {
 function updateStars() {
   stars.forEach((star) => {
     if (star.fall) {
-      star.y += star.speed * 6;
+      star.y += star.speed * 1;
       star.x += star.speed * 2;
 
       if (star.y > canvas.height) {
@@ -103,6 +103,14 @@ function updateStars() {
       <div className="relative w-full h-screen text-white overflow-hidden">
         
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
+        <div
+          className="absolute bottom-0 left-0 w-full pointer-events-none"
+          style={{
+            height: "180px",
+            zIndex: 1,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0) 0%, #030508 100%)",
+          }}
+        />
          <main className="relative z-10 flex flex-col items-center justify-center h-[calc(100vh-100px)] text-center px-4 lg:pt-30 pt-3">
       <motion.div
         initial={{ opacity: 0, y: 80 }}
@@ -113,13 +121,13 @@ function updateStars() {
         }}
         viewport={{ once: true, amount: 0.6 }} // triggers once when 60% visible
       >
-        <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
+        <span className="text-4xl md:text-7xl font-medium ">
           Discover Endless Possibilities <br />
           in the{" "}
-          <span className="text-cyan-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">
+          <span className="text-cyan-400 text-7xl font-medium drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">
             AI-Powered Cyber-space
           </span>
-        </h2>
+        </span>
 
         <p className="mt-4 max-w-2xl text-gray-300 text-center mx-auto">
           Step into the AI-Powered Cyber-space and seize opportunity with our services, expert guidance,  strategic insights for unrivaled financial success,

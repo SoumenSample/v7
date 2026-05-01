@@ -149,7 +149,7 @@ export default function AdminPayment() {
             </thead>
 
             {/* Body */}
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-gray-900/50">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-gray-50 dark:bg-white/5">
               {payments.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
@@ -168,7 +168,7 @@ export default function AdminPayment() {
                   const isPaid = balance <= 0
 
                   return (
-                    <tr key={p._id} className="hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
+                    <tr key={p._id} className="hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
 
                       {/* Title */}
                       <td className="px-5 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
@@ -232,7 +232,7 @@ export default function AdminPayment() {
 
         {/* Footer */}
         {payments.length > 0 && (
-          <div className="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
+          <div className="px-5 py-3 bg-gray-50 dark:bg-white/5 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
             Showing {payments.length} payment{payments.length !== 1 ? "s" : ""}
           </div>
         )}

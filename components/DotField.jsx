@@ -1,5 +1,4 @@
 import { useEffect, useRef, memo } from 'react';
-
 import './DotField.css';
 
 const TWO_PI = Math.PI * 2;
@@ -40,16 +39,18 @@ const DotField = memo(({
     const ctx = canvas.getContext('2d', { alpha: true });
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let resizeTimer;
-
-    function resize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(doResize, 100);
-    }
+    let initTimer;
 
     function doResize() {
       const rect = canvas.parentElement.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
+
+      // Guard: if parent has no size yet, retry
+      if (w === 0 || h === 0) {
+        resizeTimer = setTimeout(doResize, 100);
+        return;
+      }
 
       canvas.width = w * dpr;
       canvas.height = h * dpr;
@@ -65,6 +66,11 @@ const DotField = memo(({
       };
 
       buildDots(w, h);
+    }
+
+    function resize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(doResize, 100);
     }
 
     function buildDots(w, h) {
@@ -105,7 +111,6 @@ const DotField = memo(({
     }
 
     const speedInterval = setInterval(updateMouseSpeed, 20);
-
     let frameCount = 0;
 
     function tick() {
@@ -131,15 +136,38 @@ const DotField = memo(({
       }
 
       ctx.clearRect(0, 0, w, h);
+      // ctx.clearRect(0, 0, w, h);
 
-      const grad = ctx.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, p.gradientFrom);
-      grad.addColorStop(1, p.gradientTo);
-      ctx.fillStyle = grad;
+// ✅ ADD THIS BLOCK HERE
+const centerX = w / 2;
+const centerY = h / 2;
+const radius = Math.max(w, h) / 2;
 
-      const cr = p.cursorRadius;
-      const crSq = cr * cr;
-      const rad = p.dotRadius / 2;
+const grad = ctx.createRadialGradient(
+  centerX, centerY, 0,
+  centerX, centerY, radius
+);
+
+// cyan-900 → cyan-700 → cyan-400
+grad.addColorStop(0, "rgb(8, 51, 68)");
+grad.addColorStop(0.5, "rgb(14, 116, 144)");
+grad.addColorStop(1, "rgb(34, 211, 238)");
+
+ctx.fillStyle = grad;
+// ✅ END HERE
+
+const cr = p.cursorRadius;
+const crSq = cr * cr;
+const rad = p.dotRadius / 2;
+
+      // const grad = ctx.createLinearGradient(0, 0, w, h);
+      // grad.addColorStop(0, p.gradientFrom);
+      // grad.addColorStop(1, p.gradientTo);
+      // ctx.fillStyle = grad;
+
+      // const cr = p.cursorRadius;
+      // const crSq = cr * cr;
+      // const rad = p.dotRadius / 2;
       const isBulge = p.bulgeOnly;
 
       ctx.beginPath();
@@ -153,8 +181,8 @@ const DotField = memo(({
         if (distSq < crSq && eng > 0.01) {
           const dist = Math.sqrt(distSq);
           if (isBulge) {
-            const t = 1 - dist / cr;
-            const push = t * t * p.bulgeStrength * eng;
+            const tVal = 1 - dist / cr;
+            const push = tVal * tVal * p.bulgeStrength * eng;
             const angle = Math.atan2(dy, dx);
             d.sx += (d.ax - Math.cos(angle) * push - d.sx) * 0.15;
             d.sy += (d.ay - Math.sin(angle) * push - d.sy) * 0.15;
@@ -191,24 +219,53 @@ const DotField = memo(({
             ctx.moveTo(drawX + rad * 1.8, drawY);
             ctx.arc(drawX, drawY, rad * 1.8, 0, TWO_PI);
           } else {
-            ctx.moveTo(drawX + rad, drawY);
-            ctx.arc(drawX, drawY, rad, 0, TWO_PI);
+           // Normalize X position (0 → 1)
+const nx = drawX / w;
+
+// Interpolate between cyan-700 and cyan-400
+// cyan-700 ≈ rgb(14,116,144)
+// cyan-400 ≈ rgb(34,211,238)
+
+const r = Math.floor(14 + (34 - 14) * nx);
+const g = Math.floor(116 + (211 - 116) * nx);
+const b = Math.floor(144 + (238 - 144) * nx);
+
+// ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+ctx.moveTo(drawX + rad, drawY);
+ctx.arc(drawX, drawY, rad, 0, TWO_PI);
           }
         } else {
-          ctx.moveTo(drawX + rad, drawY);
-          ctx.arc(drawX, drawY, rad, 0, TWO_PI);
+        // Normalize X position (0 → 1)
+const nx = drawX / w;
+
+// Interpolate between cyan-700 and cyan-400
+// cyan-700 ≈ rgb(14,116,144)
+// cyan-400 ≈ rgb(34,211,238)
+
+const r = Math.floor(14 + (34 - 14) * nx);
+const g = Math.floor(116 + (211 - 116) * nx);
+const b = Math.floor(144 + (238 - 144) * nx);
+
+// ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+ctx.moveTo(drawX + rad, drawY);
+ctx.arc(drawX, drawY, rad, 0, TWO_PI);
         }
       }
 
       ctx.fill();
-
       rafRef.current = requestAnimationFrame(tick);
     }
 
-    doResize();
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', onMouseMove, { passive: true });
-    rafRef.current = requestAnimationFrame(tick);
+
+    // Wait for layout paint before first measure
+    initTimer = setTimeout(() => {
+      doResize();
+      rafRef.current = requestAnimationFrame(tick);
+    }, 50);
 
     rebuildRef.current = () => {
       const { w, h } = sizeRef.current;
@@ -219,6 +276,7 @@ const DotField = memo(({
       cancelAnimationFrame(rafRef.current);
       clearInterval(speedInterval);
       clearTimeout(resizeTimer);
+      clearTimeout(initTimer);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
     };
@@ -238,6 +296,8 @@ const DotField = memo(({
           inset: 0,
           width: '100%',
           height: '100%',
+        maskImage: 'none',
+WebkitMaskImage: 'none',
         }}
       />
       <svg

@@ -619,7 +619,7 @@ export default function OurServicesWithWires() {
     <section
       ref={containerRef}
       className="relative z-0 w-full overflow-hidden bg-[#030508]"
-      style={{ paddingTop: "72px", paddingBottom: "72px" }}
+      style={{ paddingTop: "30px", paddingBottom: "72px" }}
     >
       <Pattern />
 
@@ -648,22 +648,22 @@ export default function OurServicesWithWires() {
       <div className="relative z-10 max-w-6xl mx-auto px-4">
 
         {/* Heading */}
-        <div ref={sectionRef} className="text-center mb-12">
+        <div ref={sectionRef} className="text-center mb-12 -mt-8">
           <h2
-            className="text-4xl sm:text-5xl font-black text-white tracking-tight"
+            className="text-4xl sm:text-5xl font-black text-cyan-400 tracking-tight"
             style={{ fontFamily: "'Syne','DM Sans',sans-serif" }}
           >
-            Our{" "}
-            <span style={{
+            Our Services
+            {/* <span style={{
               background: "linear-gradient(120deg,#22d3ee 0%,#818cf8 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
-            }}>
-              Services
-            </span>
+            }}> */}
+              
+            {/* </span> */}
           </h2>
-          <p className="mt-2 text-xs tracking-[0.22em] uppercase text-gray-500">
+          {/* <p className="mt-2 text-xs tracking-[0.22em] uppercase text-gray-500">
             Everything your business needs to grow
-          </p>
+          </p> */}
         </div>
 
         {/* TOP ROW */}

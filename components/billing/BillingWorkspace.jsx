@@ -722,14 +722,14 @@ export default function BillingWorkspace({ mode = "client" }) {
                     <select
                       value={form.recipientUserId}
                       onChange={(event) => handleRecipientChange(event.target.value)}
-                      className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                      className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
                       required
                     >
-                      <option value="" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+                      <option value="" className="bg-background text-foreground dark:bg-background dark:text-foreground">
                         Select client
                       </option>
                       {clients.map((client) => (
-                        <option key={client._id} value={client._id} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+                        <option key={client._id} value={client._id} className="bg-background text-foreground dark:bg-background dark:text-foreground">
                           {client.name} ({client.email})
                         </option>
                       ))}
@@ -756,7 +756,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="flex items-center gap-2 text-sm text-gray-400">
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
                     <input
                       type="checkbox"
                       checked={Boolean(form.isPaid)}
@@ -764,7 +764,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                     />
                     Mark as paid (show paid stamp and signature)
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-400">
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
                     <input
                       type="checkbox"
                       checked={Boolean(form.strikeDueDate)}
@@ -797,7 +797,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                     value={form.recipientAddress}
                     onChange={(event) => updateField("recipientAddress", event.target.value)}
                     rows={3}
-                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-grey-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring/50 dark:border-white/15 dark:bg-background dark:text-foreground"
                   />
                 </Field>
 
@@ -806,13 +806,12 @@ export default function BillingWorkspace({ mode = "client" }) {
                     value={form.issuerAddress}
                     onChange={(event) => updateField("issuerAddress", event.target.value)}
                     rows={3}
-                    // className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-grey-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring/50 dark:border-white/15 dark:bg-background dark:text-foreground"
                   />
                 </Field>
 
                 <div className="flex items-center justify-between gap-3 font-semibold text-xl">
-                  <label className="text-foreground font-semibold p-2 mb-2 text-xl">Line Items</label>
+                  <label className="mb-2 p-2 text-xl font-semibold text-foreground">Line Items</label>
                   <Button type="button" variant="outline" onClick={addLineItem}>
                     Add Row
                   </Button>
@@ -832,7 +831,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                 </div> 
 
                 <div className="flex items-center justify-between gap-3">
-                  <label className="text-foreground p-2 mb-2">Adjustment Rows</label>
+                  <label className="mb-2 p-2 text-foreground">Adjustment Rows</label>
                   <Button type="button" variant="outline" onClick={addAdjustmentRow}>
                     Add Row
                   </Button>
@@ -863,14 +862,14 @@ export default function BillingWorkspace({ mode = "client" }) {
                   <Input value={form.advanceRow.description} onChange={(event) => updateField("advanceRow.description", event.target.value)} />
                 </Field>
 
-                <label className="text-foreground p-2 mb-10 text-xl font-semibold">Terms & Payment</label>
+                <label className="mb-10 p-2 text-xl font-semibold text-foreground">Terms & Payment</label>
                 <div className="grid gap-3 md:grid-cols-2">
                   <Field label="Note 1">
                     <textarea
                       value={form.notes[0]}
                       onChange={(event) => updateNotes(0, event.target.value)}
                       rows={3}
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring/50 dark:border-white/15 dark:bg-background dark:text-foreground"
                     />
                   </Field>
                   <Field label="Note 2">
@@ -878,7 +877,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                       value={form.notes[1]}
                       onChange={(event) => updateNotes(1, event.target.value)}
                       rows={3}
-                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                      className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring/50 dark:border-white/15 dark:bg-background dark:text-foreground"
                     />
                   </Field>
                 </div>
@@ -947,11 +946,11 @@ export default function BillingWorkspace({ mode = "client" }) {
                       <select
                         value={uploadForm.type}
                         onChange={(event) => updateUploadField("type", event.target.value)}
-                        className="h-8 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
                         required
                       >
-                        <option value="invoice" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">Invoice</option>
-                        <option value="bill" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">Bill</option>
+                          <option value="invoice" className="bg-background text-foreground dark:bg-background dark:text-foreground">Invoice</option>
+                          <option value="bill" className="bg-background text-foreground dark:bg-background dark:text-foreground">Bill</option>
                       </select>
                     </Field>
                     <Field label="Reference Number">
@@ -965,14 +964,14 @@ export default function BillingWorkspace({ mode = "client" }) {
                       <select
                         value={uploadForm.recipientUserId}
                         onChange={(event) => updateUploadField("recipientUserId", event.target.value)}
-                        className="h-8 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          className="h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
                         required
                       >
-                        <option value="" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+                          <option value="" className="bg-background text-foreground dark:bg-background dark:text-foreground">
                           Select client
                         </option>
                         {clients.map((client) => (
-                          <option key={client._id} value={client._id} className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+                            <option key={client._id} value={client._id} className="bg-background text-foreground dark:bg-background dark:text-foreground">
                             {client.name} ({client.email})
                           </option>
                         ))}
@@ -1007,9 +1006,9 @@ export default function BillingWorkspace({ mode = "client" }) {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p className="text-sm text-slate-500">Loading billing records...</p>
+                <p className="text-sm text-muted-foreground">Loading billing records...</p>
               ) : bills.length === 0 ? (
-                <p className="text-sm text-slate-500">No bills or invoices have been issued to you yet.</p>
+                <p className="text-sm text-muted-foreground">No bills or invoices have been issued to you yet.</p>
               ) : (
                 <div className="space-y-3">
                   {bills.map((bill) => (
@@ -1019,18 +1018,18 @@ export default function BillingWorkspace({ mode = "client" }) {
                       onClick={() => setSelectedId(bill._id)}
                       className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
                         selectedId === bill._id
-                          ? "border-slate-900/20 bg-slate-100"
-                          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                          ? "border-border bg-muted/50 dark:border-white/20 dark:bg-white/5"
+                          : "border-border/70 bg-background hover:border-border hover:bg-muted/40 dark:border-white/10 dark:hover:bg-white/5"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{bill.type}</p>
-                          <p className="text-lg font-bold text-slate-900">{bill.referenceNumber}</p>
+                          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">{bill.type}</p>
+                          <p className="text-lg font-bold text-foreground">{bill.referenceNumber}</p>
                         </div>
-                        <p className="text-sm text-slate-500">{formatDateInput(bill.issueDate)}</p>
+                        <p className="text-sm text-muted-foreground">{formatDateInput(bill.issueDate)}</p>
                       </div>
-                      <p className="mt-2 text-sm text-slate-600">{bill.documentTitle} - {bill.documentSubtitle}</p>
+                      <p className="mt-2 text-sm text-muted-foreground">{bill.documentTitle} - {bill.documentSubtitle}</p>
                     </button>
                   ))}
                 </div>
@@ -1042,23 +1041,23 @@ export default function BillingWorkspace({ mode = "client" }) {
         {canManage ? (
           <Card>
             <CardHeader>
-              <CardTitle>Saved Documents</CardTitle>
+              <CardTitle className="text-foreground">Saved Documents</CardTitle>
               <CardDescription>Edit-ready records with the same template structure.</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p className="text-sm text-black-100/70">Loading billing records...</p>
+                <p className="text-sm text-muted-foreground">Loading billing records...</p>
               ) : bills.length === 0 ? (
-                <p className="text-sm text-black-100/70">No bills or invoices have been created yet.</p>
+                <p className="text-sm text-muted-foreground">No bills or invoices have been created yet.</p>
               ) : (
                 <div className="space-y-3">
                   {bills.map((bill) => (
-                    <div key={bill._id} className={`rounded-lg border p-3 cursor-pointer ${selectedId === bill._id ? "border-gray-500 border-2 bg-transparent" : "border-gray-500/20 bg-transparent hover:bg-cyan-500/5"}`}>
+                    <div key={bill._id} className={`cursor-pointer rounded-lg border p-3 ${selectedId === bill._id ? "border-border bg-muted/40 dark:border-white/20 dark:bg-white/5" : "border-border/70 bg-background hover:bg-muted/40 dark:border-white/10 dark:hover:bg-white/5"}`}>
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <button type="button" className="text-left" onClick={() => setSelectedId(bill._id)}>
-                          <p className="text-xs uppercase tracking-[0.18em] text-black-100/70">{bill.type} {isUploadedRecord(bill) ? "- uploaded" : "- template"}</p>
-                          <p className="text-lg font-semibold text-black">{bill.referenceNumber}</p>
-                          <p className="text-sm text-black">{bill.recipientName}</p>
+                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{bill.type} {isUploadedRecord(bill) ? "- uploaded" : "- template"}</p>
+                          <p className="text-lg font-semibold text-foreground">{bill.referenceNumber}</p>
+                          <p className="text-sm text-muted-foreground">{bill.recipientName}</p>
                         </button>
 
                         <div className="flex flex-wrap gap-2">
@@ -1090,7 +1089,7 @@ export default function BillingWorkspace({ mode = "client" }) {
             <CardHeader>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <CardTitle>{adminMode === "upload" ? "Upload & Assign" : "Live Template Preview"}</CardTitle>
+                  <CardTitle className="text-foreground">{adminMode === "upload" ? "Upload & Assign" : "Live Template Preview"}</CardTitle>
                   <CardDescription>
                     {adminMode === "upload"
                       ? "Upload the original file and assign it to a client."
@@ -1117,7 +1116,7 @@ export default function BillingWorkspace({ mode = "client" }) {
               {notice ? <p className="mb-3 text-sm text-emerald-400">{notice}</p> : null}
               {error ? <p className="mb-3 text-sm text-red-400">{error}</p> : null}
               {adminMode === "upload" ? (
-                <p className="text-sm text-slate-700">
+                <p className="text-sm text-muted-foreground">
                   Upload the file once, then assign it. The original file is stored and downloaded without conversion.
                 </p>
               ) : (
@@ -1132,7 +1131,7 @@ export default function BillingWorkspace({ mode = "client" }) {
             <CardHeader>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <CardTitle>Document Preview</CardTitle>
+                  <CardTitle className="text-foreground">Document Preview</CardTitle>
                   <CardDescription>Read-only access to your own issued bills and invoices.</CardDescription>
                 </div>
                 {isUploadedRecord(selectedBill) ? (
@@ -1156,13 +1155,13 @@ export default function BillingWorkspace({ mode = "client" }) {
               {error ? <p className="mb-3 text-sm text-rose-600">{error}</p> : null}
               {selectedBill ? (
                 isUploadedRecord(selectedBill) ? (
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <div className="rounded-lg border border-border bg-background p-3 dark:border-white/15 dark:bg-background">
                     {isImageMimeType(selectedBill.fileMimeType) ? (
                       <img src={selectedBill.fileUrl} alt={selectedBill.fileName || "Uploaded billing file"} className="w-full rounded-md" />
                     ) : isPdfMimeType(selectedBill.fileMimeType) ? (
-                      <iframe title="Uploaded billing PDF" src={selectedBill.fileUrl} className="h-[720px] w-full rounded-md border border-slate-200 bg-white" />
+                      <iframe title="Uploaded billing PDF" src={selectedBill.fileUrl} className="h-180 w-full rounded-md border border-border bg-background dark:border-white/15 dark:bg-background" />
                     ) : (
-                      <p className="text-sm text-slate-600">Preview is not available for this file type. Use Download Uploaded File.</p>
+                      <p className="text-sm text-muted-foreground">Preview is not available for this file type. Use Download Uploaded File.</p>
                     )}
                   </div>
                 ) : (
@@ -1171,7 +1170,7 @@ export default function BillingWorkspace({ mode = "client" }) {
                   </div>
                 )
               ) : (
-                <p className="text-sm text-slate-500">Select a document to preview it here.</p>
+                <p className="text-sm text-muted-foreground">Select a document to preview it here.</p>
               )}
             </CardContent>
           </Card>
@@ -1185,14 +1184,14 @@ export default function BillingWorkspace({ mode = "client" }) {
 function Field({ label, children }) {
   return (
     <div>
-      <Label>{label}</Label>
+      <Label className="text-foreground">{label}</Label>
       {children}
     </div>
   );
 }
 
 function SectionLabel({ children }) {
-  return <p className="text-sm font-semibold uppercase tracking-[0.2em] text-black-100/80">{children}</p>;
+  return <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">{children}</p>;
 }
 
 function TemplatePicker({ value, onChange }) {
@@ -1201,10 +1200,10 @@ function TemplatePicker({ value, onChange }) {
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none transition focus:ring-2 focus:ring-cyan-400/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring/50 dark:border-white/15 dark:bg-background dark:text-foreground"
       >
-        <option value="invoice" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">Invoice Template</option>
-        <option value="bill" className="bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100">Bill Template</option>
+        <option value="invoice" className="bg-background text-foreground">Invoice Template</option>
+        <option value="bill" className="bg-background text-foreground">Bill Template</option>
       </select>
     </Field>
   );
