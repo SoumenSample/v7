@@ -86,9 +86,41 @@ function ChatInner({
     const resolvedSocketUrl = typeof window !== "undefined" && window.location.hostname === "localhost" && socketUrl.includes("localhost:3000")
       ? "http://localhost:5000"
       : socketUrl
-    const socket = io(resolvedSocketUrl, { transports: ["websocket", "polling"] })
 
-    socket.emit("join", currentUserId)
+    // Create socket with authentication and auto-reconnect
+    const socket = io(resolvedSocketUrl, {
+      transports: ["websocket", "polling"],
+      auth: {
+        userId: currentUserId,
+        // token can be added here if using JWT
+      },
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+    })
+
+    socket.emit("join", { userId: currentUserId }, (response: any) => {
+      if (response?.ok) {
+        console.log(`[socket] Joined successfully. Online count: ${response.onlineCount}`)
+      } else {
+        console.error(`[socket] Join failed:`, response?.error)
+      }
+    })
+
+    socket.on("connect", () => {
+      console.debug("[socket] connected", socket.id, "userId=", currentUserId)
+      // Rejoin on reconnect
+      socket.emit("join", { userId: currentUserId })
+    })
+
+    socket.on("connect_error", (err) => {
+      console.error("[socket] connect_error", err)
+    })
+
+    socket.on("disconnect", (reason) => {
+      console.warn("[socket] disconnected", reason)
+    })
 
     socket.on("receive-message", (payload) => {
       const senderId = payload?.sender?.toString?.() || payload?.senderId || payload?.sender || ""
@@ -116,6 +148,9 @@ function ChatInner({
 
     return () => {
       socket.off("receive-message")
+      socket.off("connect")
+      socket.off("connect_error")
+      socket.off("disconnect")
       socket.disconnect()
     }
   }, [addMessage, currentUserId])

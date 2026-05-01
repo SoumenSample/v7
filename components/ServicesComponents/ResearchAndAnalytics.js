@@ -5,7 +5,6 @@ import ServicePage from "@/components/ServicePage";
 import {
   SiNumpy,
   SiPandas,
-  SiTableau,
   SiPowerbi,
   SiMysql,
   SiGoogle,
@@ -16,6 +15,7 @@ import {
   SiApachespark,
   SiPytorch,
 } from "react-icons/si";
+import { IoLogoTableau } from "react-icons/io5";
 
 export default function ResearchAndAnalytics() {
   const subServices = [
@@ -54,7 +54,7 @@ export default function ResearchAndAnalytics() {
   const technologies = [
     { name: "NumPy", icon: <SiNumpy size={22} /> },
     { name: "Pandas", icon: <SiPandas size={22} /> },
-    { name: "Tableau", icon: <SiTableau size={22} /> },
+    { name: "Tableau", icon: <IoLogoTableau size={22} /> },
     { name: "Power BI", icon: <FaChartLine size={22} /> },
     { name: "SQL", icon: <FaDatabase size={22} /> },
     { name: "Google Trends", icon: <SiGoogle size={22} /> },

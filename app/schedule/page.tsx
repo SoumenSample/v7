@@ -3,6 +3,7 @@ import { Calendar } from "./component/calender"
 import { requireAuth } from "@/lib/auth"
 import { connectToDatabase } from "@/lib/mongodb"
 import Event from "@/lib/models/Event"
+import User from "@/lib/models/User"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarProvider } from "@/components/ui/sidebar"
@@ -33,7 +34,8 @@ export default async function CalendarPage() {
 
   await connectToDatabase()
   const currentUserEmail = session.user.email
-  const currentUserId = session.user.id
+  const userModel = User as any
+  const currentUser = await userModel.findOne({ email: session.user.email }).select("role").lean()
 
   const rawEvents = await Event.find().sort({ date: 1 }).lean()
 
@@ -64,7 +66,7 @@ export default async function CalendarPage() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar
-          role={session.user.role}
+          role={currentUser?.role || "client"}
           user={{
             name: session.user.name || "User",
             email: session.user.email || "",
@@ -75,6 +77,7 @@ export default async function CalendarPage() {
           <SiteHeader
             title="Schedule"
             subtitle="Calendar"
+            className=""
             contentClassName="pl-0 pr-4 lg:pr-6"
           />
           <main className="flex-1 w-full overflow-x-hidden py-4 pr-4 pl-0 lg:py-6 lg:pr-6 lg:pl-0">
@@ -82,7 +85,6 @@ export default async function CalendarPage() {
               events={visibleEvents}
               eventDates={visibleEventDates}
               currentUserEmail={currentUserEmail}
-              currentUserId={currentUserId}
             />
           </main>
         </div>

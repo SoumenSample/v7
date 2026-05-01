@@ -947,7 +947,6 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { gsap } from "gsap";
 import { ChevronDownIcon } from "lucide-react";
-import { NeonBorder } from "../ui/neon-border/NeonBorder";
 import { HoverBorderGradient } from "../ui/hover-border-gradient";
 
 type DropdownItem = {
@@ -1470,7 +1469,6 @@ const SparkleNavbar: React.FC<SparkleNavbarProps> = ({
           })}
           <div style={{ marginLeft: "20px" }}>
             <HoverBorderGradient 
-              type="full"
               onClick={() => {
                 console.log("Quick enquiry clicked");
               }}

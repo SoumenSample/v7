@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 const MOVEMENT_DAMPING = 1400
 
-const GLOBE_CONFIG: COBEOptions = {
+const GLOBE_CONFIG: any = {
   width: 800,
   height: 800,
   onRender: () => {},
@@ -89,7 +89,7 @@ export function Globe({
         state.width = widthRef.current * 2
         state.height = widthRef.current * 2
       },
-    })
+    } as any)
 
     setTimeout(() => (canvasRef.current!.style.opacity = "1"), 0)
     return () => {

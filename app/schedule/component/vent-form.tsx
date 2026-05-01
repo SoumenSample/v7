@@ -384,7 +384,7 @@ export function EventForm({ event, open, onOpenChange, onSave, onDelete, current
             {/* Attendees - Meeting participants (optional, for reference) */}
             <div>
               <SectionLabel>Attendees (Optional)</SectionLabel>
-              <p className="text-xs text-muted-foreground mb-3">List names of people attending this event. This is for reference only—use "Share With" above to control who can see this event.</p>
+              <p className="text-xs text-muted-foreground mb-3">List names of people attending this event. This is for reference only—use &quot;Share With&quot; above to control who can see this event.</p>
               {formData.attendees.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-1.5">
                   {formData.attendees.map((name, i) => (

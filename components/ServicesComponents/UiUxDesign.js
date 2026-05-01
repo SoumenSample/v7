@@ -7,13 +7,13 @@ import {
   SiFramer,
   SiHotjar,
   SiUsabilityhub,
-  SiAdobeillustrator,
-  SiAdobeaftereffects,
   SiStorybook,
   SiMiro,
   SiZeroheight,
   SiProtopie,
 } from "react-icons/si";
+import { TbBrandAdobeIllustrator } from "react-icons/tb";
+import { FaFilm } from "react-icons/fa";
 import ServicePage from "@/components/ServicePage";
 
 export default function UiUxDesign() {
@@ -185,9 +185,9 @@ export default function UiUxDesign() {
     { name: "Framer", icon: <SiFramer  size={22} /> },
     { name: "Hotjar", icon: <SiHotjar size={22} /> },
     { name: "UsabilityHub", icon: <FaUserCheck   size={22} /> },
-    { name: "Adobe Illustrator", icon: <SiAdobeillustrator  size={22} /> },
+    { name: "Adobe Illustrator", icon: <TbBrandAdobeIllustrator size={22} /> },
     { name: "ProtoPie", icon: <FaProjectDiagram   size={22} /> },
-    { name: "After Effects", icon: <SiAdobeaftereffects  size={22} /> },
+    { name: "After Effects", icon: <FaFilm size={22} /> },
     { name: "Miro / FigJam", icon: <SiMiro  size={22} /> },
     { name: "Storybook", icon: <SiStorybook  size={22} /> },
   ];

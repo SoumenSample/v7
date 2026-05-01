@@ -15,13 +15,22 @@ export default async function AccountPage() {
 
   await connectToDatabase()
 
-  const userRecord = await User.findById(session.user.id).select("name email role phone region source isActive createdAt updatedAt").lean()
+  const userModel = User as any
+  const userEmail = session.user.email
+
+  if (!userEmail) {
+    redirect("/dashboard")
+  }
+
+  const userRecord = await userModel.findOne({ email: userEmail })
+    .select("name email role phone region source isActive createdAt updatedAt")
+    .lean()
 
   if (!userRecord) {
     redirect("/dashboard")
   }
 
-  const canEdit = session.user.role === "admin"
+  const canEdit = userRecord.role === "admin"
   const displayName = userRecord.name || session.user.name || "Account"
 
   return (

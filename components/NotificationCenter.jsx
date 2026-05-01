@@ -33,15 +33,40 @@ const NotificationCenter = () => {
     const userId = session?.user?.id;
     if (!userId) return undefined;
 
-    const socket = io(socketUrl, { transports: ["websocket", "polling"] });
-    socket.emit("join", userId);
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (typeof window !== "undefined" ? window.location.origin : "");
+
+    const socket = io(socketUrl, {
+      transports: ["websocket", "polling"],
+      auth: {
+        userId,
+        // token can be added here if using JWT
+      },
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+    });
+
+    socket.emit("join", { userId }, (response) => {
+      if (response?.ok) {
+        console.debug("[socket] Joined notification center successfully");
+      } else {
+        console.error("[socket] Join failed:", response?.error);
+      }
+    });
 
     socket.on("connect", () => {
       console.debug("[socket] connected", socket.id, "userId=", userId);
+      // Rejoin on reconnect
+      socket.emit("join", { userId });
     });
 
     socket.on("connect_error", (err) => {
       console.error("[socket] connect_error", err);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("[socket] disconnected", reason);
     });
 
     socket.on("notification", (payload) => {
@@ -67,6 +92,9 @@ const NotificationCenter = () => {
 
     return () => {
       socket.off("notification");
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
       socket.disconnect();
     };
   }, [addNotification, session?.user?.id, socketUrl]);

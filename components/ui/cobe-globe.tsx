@@ -298,7 +298,11 @@ export function Cobe({
       scale: variant === "scaled" ? 2.5 : undefined,
       offset: variant === "scaled" ? [0, width * 2 * 0.4 * 0.6] : undefined,
       opacity: opacity,
-      onRender: (state: CobeState) => {
+    } as any)
+
+    // Apply onRender callback after creation to support both v1 and v2 types
+    if (globe && typeof (globe as any).onRender === "function") {
+      (globe as any).onRender = (state: CobeState) => {
         switch (variant) {
           case "default":
             state.phi = phi + r.get()
@@ -337,8 +341,8 @@ export function Cobe({
 
         state.width = width * 2
         state.height = variant === "scaled" ? width * 2 * 0.4 : width * 2
-      },
-    })
+      }
+    }
 
     if (canvasRef.current) {
       setTimeout(() => {

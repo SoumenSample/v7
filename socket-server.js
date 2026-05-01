@@ -1,26 +1,52 @@
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { createRateLimitMiddleware } = require("./lib/socket/rate-limiter");
+const { getLogger } = require("./lib/socket/logger");
+const {
+  validateMessage,
+  validateReceiverId,
+  validateTicketMessage,
+  normalizeId,
+} = require("./lib/socket/validators");
 
 const port = Number(process.env.PORT || 5000);
-const allowedOrigins = (process.env.SOCKET_CORS_ORIGIN || process.env.APP_URL || "").split(",").map(o => o.trim()).filter(Boolean);
+const allowedOrigins = (process.env.SOCKET_CORS_ORIGIN || process.env.APP_URL || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 const httpServer = createServer();
+const logger = getLogger();
+const rateLimiter = createRateLimitMiddleware();
 
 const io = new Server(httpServer, {
-  cors: allowedOrigins.length > 0 
+  cors: allowedOrigins.length > 0
     ? { origin: allowedOrigins, credentials: true }
-    : { origin: "*" },
+    : process.env.NODE_ENV !== "production"
+    ? { origin: "*" }
+    : undefined,
   transports: ["websocket", "polling"],
 });
 
 const onlineUsers = new Map();
 
-// ===== HELPERS =====
-function normalizeId(value) {
-  if (value === null || value === undefined) return "";
-  return value.toString();
-}
+// ===== MIDDLEWARE =====
+io.use((socket, next) => {
+  try {
+    const userId = socket.handshake.auth?.userId;
+    if (!userId) {
+      return next(new Error("MISSING_USER_ID"));
+    }
+    socket.userId = normalizeId(userId);
+    logger.logConnection("info", socket.id, "auth_check_passed", { userId: socket.userId });
+    next();
+  } catch (err) {
+    logger.logError("AUTH", err, { socketId: socket.id });
+    next(new Error("AUTHENTICATION_ERROR"));
+  }
+});
 
+// ===== HELPERS =====
 function getOnlineUserIds() {
   return Array.from(onlineUsers.keys());
 }
@@ -78,73 +104,206 @@ function emitToUsers(userIds, eventName, payload) {
     io.to(socketId).emit(eventName, payload);
   }
 
+  logger.logEmit(userIds, eventName, true);
   return true;
 }
 
 // ===== SOCKET EVENTS =====
 io.on("connection", (socket) => {
-  console.log(`[Socket] User connected: ${socket.id}`);
+  const userId = socket.userId;
+  logger.logConnection("info", socket.id, "connected", { userId });
 
-  socket.on("join", (userId) => {
-    const normalizedUserId = normalizeId(userId);
-    if (!normalizedUserId) return;
+  // ===== JOIN EVENT =====
+  socket.on("join", (data, callback) => {
+    try {
+      const joinUserId = normalizeId(data?.userId || data);
+      if (!joinUserId) {
+        logger.logAuth("warn", userId, "join_failed", { reason: "invalid_user_id" });
+        if (callback) callback({ ok: false, error: "Invalid user ID" });
+        return;
+      }
 
-    socket.data.userId = normalizedUserId;
-    addUserSocket(normalizedUserId, socket.id);
+      socket.data.userId = joinUserId;
+      addUserSocket(joinUserId, socket.id);
 
-    io.emit("online-users", getOnlineUserIds());
-    console.log(`[Join] ${normalizedUserId} joined. Online: ${getOnlineUserIds().length}`);
+      const onlineUserIds = getOnlineUserIds();
+      io.emit("online-users", onlineUserIds);
+
+      logger.logAuth("info", joinUserId, "joined", { socketId: socket.id });
+      if (callback) callback({ ok: true, onlineCount: onlineUserIds.length });
+    } catch (err) {
+      logger.logError("JOIN", err, { userId });
+      if (callback) callback({ ok: false, error: "Join failed" });
+    }
   });
 
-  socket.on("send-message", (data) => {
-    const receiverId = data?.receiverId?.toString?.() || data?.receiver?.toString?.();
+  // ===== SEND MESSAGE EVENT =====
+  socket.on("send-message", (data, callback) => {
+    try {
+      // Check rate limit
+      const rateCheckResult = rateLimiter.checkMessage(userId);
+      if (!rateCheckResult.allowed) {
+        logger.logRateLimit(userId, "send-message", rateCheckResult.remaining, rateCheckResult.resetAt);
+        if (callback) {
+          callback({
+            ok: false,
+            error: "Rate limit exceeded",
+            resetAt: rateCheckResult.resetAt,
+          });
+        }
+        return;
+      }
 
-    if (!receiverId) return;
+      // Validate message
+      const validation = validateMessage(data);
+      if (!validation.valid) {
+        logger.logValidationError(userId, "send-message", validation.errors, data);
+        if (callback) callback({ ok: false, errors: validation.errors });
+        return;
+      }
 
-    emitToUsers([receiverId], "receive-message", data);
-    emitToUsers([receiverId], "notification", {
-      type: "chat",
-      text: "New message",
-    });
+      // Validate receiver
+      const receiverValidation = validateReceiverId(data?.receiverId || data?.receiver);
+      if (!receiverValidation.valid) {
+        logger.logValidationError(userId, "send-message", receiverValidation.errors, data);
+        if (callback) callback({ ok: false, errors: receiverValidation.errors });
+        return;
+      }
+
+      const receiverId = receiverValidation.receiverId;
+
+      // Prevent self-messaging
+      if (userId === receiverId) {
+        logger.logValidationError(userId, "send-message", ["Cannot message yourself"], data);
+        if (callback) callback({ ok: false, error: "Cannot message yourself" });
+        return;
+      }
+
+      // Prepare message payload
+      const messagePayload = {
+        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        text: validation.text,
+        senderId: userId,
+        receiverId,
+        timestamp: new Date().toISOString(),
+        ...data,
+      };
+
+      // Emit to receiver
+      const emitted = emitToUsers([receiverId], "receive-message", messagePayload);
+      emitToUsers([receiverId], "notification", {
+        type: "chat",
+        text: "New message",
+        from: userId,
+      });
+
+      logger.logMessage("info", userId, "message_sent", {
+        receiverId,
+        msgId: messagePayload.id,
+        emitted,
+      });
+
+      if (callback) callback({ ok: true, messageId: messagePayload.id });
+    } catch (err) {
+      logger.logError("SEND_MESSAGE", err, { userId });
+      if (callback) callback({ ok: false, error: "Send failed" });
+    }
   });
 
-  socket.on("ticket-message", (data) => {
-    const { receiverId, ticketId, message } = data;
-    const normalizedReceiverId = normalizeId(receiverId);
+  // ===== TICKET MESSAGE EVENT =====
+  socket.on("ticket-message", (data, callback) => {
+    try {
+      // Check rate limit
+      const rateCheckResult = rateLimiter.checkTicket(userId);
+      if (!rateCheckResult.allowed) {
+        logger.logRateLimit(userId, "ticket-message", rateCheckResult.remaining, rateCheckResult.resetAt);
+        if (callback) {
+          callback({
+            ok: false,
+            error: "Rate limit exceeded",
+            resetAt: rateCheckResult.resetAt,
+          });
+        }
+        return;
+      }
 
-    if (!normalizedReceiverId) return;
+      // Validate ticket message
+      const validation = validateTicketMessage(data);
+      if (!validation.valid) {
+        logger.logValidationError(userId, "ticket-message", validation.errors, data);
+        if (callback) callback({ ok: false, errors: validation.errors });
+        return;
+      }
 
-    emitToUsers([normalizedReceiverId], "ticket-message", { ticketId, message });
-    emitToUsers([normalizedReceiverId], "notification", {
-      type: "ticket",
-      text: "New ticket update",
-      ticketId,
-    });
+      const receiverId = validation.receiverId;
+      const ticketId = validation.ticketId;
+
+      // Prepare ticket message payload
+      const ticketPayload = {
+        id: `tmsg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        text: validation.text,
+        senderId: userId,
+        receiverId,
+        ticketId,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Emit to receiver
+      const emitted = emitToUsers([receiverId], "ticket-message", ticketPayload);
+      emitToUsers([receiverId], "notification", {
+        type: "ticket",
+        text: "New ticket update",
+        ticketId,
+        from: userId,
+      });
+
+      logger.logMessage("info", userId, "ticket_message_sent", {
+        receiverId,
+        ticketId,
+        msgId: ticketPayload.id,
+        emitted,
+      });
+
+      if (callback) callback({ ok: true, messageId: ticketPayload.id });
+    } catch (err) {
+      logger.logError("TICKET_MESSAGE", err, { userId });
+      if (callback) callback({ ok: false, error: "Send failed" });
+    }
   });
 
-  socket.on("disconnect", () => {
-    if (socket.data.userId) {
-      removeUserSocket(socket.data.userId, socket.id);
-    } else {
-      for (const [uid, socketIds] of onlineUsers.entries()) {
-        if (socketIds.has(socket.id)) {
-          removeUserSocket(uid, socket.id);
-          break;
+  // ===== DISCONNECT EVENT =====
+  socket.on("disconnect", (reason) => {
+    try {
+      if (socket.data.userId) {
+        removeUserSocket(socket.data.userId, socket.id);
+      } else {
+        for (const [uid, socketIds] of onlineUsers.entries()) {
+          if (socketIds.has(socket.id)) {
+            removeUserSocket(uid, socket.id);
+            break;
+          }
         }
       }
-    }
 
-    io.emit("online-users", getOnlineUserIds());
-    console.log(`[Disconnect] ${socket.data.userId || socket.id} disconnected`);
+      io.emit("online-users", getOnlineUserIds());
+      logger.logConnection("info", socket.id, "disconnected", { userId, reason });
+    } catch (err) {
+      logger.logError("DISCONNECT", err, { userId, socketId: socket.id });
+    }
+  });
+
+  // ===== ERROR HANDLER =====
+  socket.on("error", (err) => {
+    logger.logError("SOCKET", err, { userId, socketId: socket.id });
   });
 });
 
 // ===== GRACEFUL SHUTDOWN =====
 const shutdown = (signal) => {
-  console.log(`\n${signal} received, shutting down gracefully...`);
+  logger.logConnection("info", "server", "shutdown_initiated", { signal });
   io.close(() => {
     httpServer.close(() => {
-      console.log("Socket server closed");
+      logger.logConnection("info", "server", "shutdown_complete", {});
       process.exit(0);
     });
   });
@@ -155,11 +314,11 @@ process.on("SIGTERM", () => shutdown("SIGTERM"));
 
 httpServer.listen(port, "0.0.0.0", () => {
   console.log(`⚡ Socket server running on port ${port}`);
-  console.log(`CORS Origins: ${allowedOrigins.length > 0 ? allowedOrigins.join(", ") : "All origins"}`);
+  console.log(`CORS Origins: ${allowedOrigins.length > 0 ? allowedOrigins.join(", ") : "All origins (dev mode)"}`);
+  logger.logConnection("info", "server", "started", { port, origins: allowedOrigins });
 });
 
-// Simple HTTP endpoint to allow other services (like serverless API routes)
-// to trigger socket emits when the socket server is deployed separately.
+// ===== HTTP ENDPOINT FOR EXTERNAL EMIT =====
 httpServer.on("request", (req, res) => {
   if (req.method === "POST" && req.url === "/emit") {
     let body = "";
@@ -169,18 +328,22 @@ httpServer.on("request", (req, res) => {
         const data = JSON.parse(body || "{}");
         const { userIds, eventName, payload, secret } = data;
 
-        // Optional secret check to avoid unauthorized emit requests
+        // Secret validation
         if (process.env.SOCKET_EMIT_SECRET) {
           if (!secret || secret !== process.env.SOCKET_EMIT_SECRET) {
+            logger.logError("EMIT_AUTH", new Error("Invalid secret"), { userIds, eventName });
             res.writeHead(403, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ ok: false, error: "Forbidden" }));
           }
         }
 
         const ok = emitToUsers(userIds, eventName, payload);
+        logger.logEmit(userIds, eventName, ok, { via: "http_endpoint" });
+
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ ok }));
       } catch (err) {
+        logger.logError("EMIT_REQUEST", err, {});
         res.writeHead(400, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ ok: false, error: "Bad Request" }));
       }

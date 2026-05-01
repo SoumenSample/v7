@@ -54,7 +54,8 @@ export function CalendarMain({ selectedDate, onDateSelect, onMenuClick, events, 
   const sampleEvents: CalendarEvent[] = events || eventsData.map(event => ({
     ...event,
     date: new Date(event.date),
-    type: event.type as "meeting" | "event" | "personal" | "task" | "reminder"
+    type: event.type as "meeting" | "event" | "personal" | "task" | "reminder",
+    assignedRoles: event.assignedRoles as Array<"admin" | "employee" | "client">,
   }))
 
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date())

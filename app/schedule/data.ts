@@ -28,7 +28,8 @@ export const events: CalendarEvent[] = eventsData.map(event => {
   return {
     ...event,
     date: eventDate,
-    type: event.type as "meeting" | "event" | "personal" | "task" | "reminder"
+    type: event.type as "meeting" | "event" | "personal" | "task" | "reminder",
+    assignedRoles: event.assignedRoles as Array<"admin" | "employee" | "client">,
   }
 })
 
