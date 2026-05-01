@@ -6,6 +6,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/lib/models/User";
 import Billing from "@/lib/models/Billing";
 import { computeBillingTotals, parseAmount } from "@/lib/billing";
+import { emitToUsers } from "@/lib/socket/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -243,6 +244,33 @@ export async function POST(request) {
   const createdBill = await Billing.findById(billing._id)
     .populate("recipientUser", "name email role")
     .populate("createdBy", "name email role");
+
+  // Notify recipient user and admins about new billing/invoice
+  try {
+    const recipientId = createdBill.recipientUser?._id?.toString?.();
+
+    if (recipientId) {
+      emitToUsers([recipientId], "notification", {
+        type: "billing",
+        title: `New ${createdBill.documentTitle || "billing document"}`,
+        text: `${createdBill.documentTitle || "A billing document"} has been issued.`,
+        billId: createdBill._id?.toString?.() || createdBill._id,
+      });
+    }
+
+    const adminIds = (await User.find({ role: "admin" }).select("_id")).map((user) => user._id?.toString?.() || user._id).filter(Boolean);
+    if (adminIds.length) {
+      emitToUsers(adminIds, "notification", {
+        type: "billing",
+        title: "Billing created",
+        text: `${createdBill.documentTitle || "A billing document"} was created for ${createdBill.recipientName || "a client"}.`,
+        billId: createdBill._id?.toString?.() || createdBill._id,
+      });
+    }
+  } catch (err) {
+    // non-fatal: notification failure should not block billing creation
+    console.error("Notification emit error (billing):", err?.message || err);
+  }
 
   return Response.json({ bill: createdBill }, { status: 201 });
 }
