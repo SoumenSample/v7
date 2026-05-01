@@ -7,9 +7,11 @@ import { cn } from "@/lib/utils";
 export const GlowingStarsBackgroundCard = ({
   className,
   children,
+  allGlow = false,
 }: {
   className?: string;
   children?: React.ReactNode;
+  allGlow?: boolean;
 }) => {
   const [mouseEnter, setMouseEnter] = useState(false);
 
@@ -27,7 +29,7 @@ export const GlowingStarsBackgroundCard = ({
       )}
     >
       <div className="flex justify-center mt-5 items-center">
-        <Illustration mouseEnter={mouseEnter} />
+        <Illustration mouseEnter={mouseEnter || allGlow} />
       </div>
       <div className="px-2 pb-6">{children}</div>
     </div>
