@@ -89,7 +89,7 @@
 }
 
 .magic-bento-card__text {
-  background: rgba(18, 15, 23, 0.85);
+  /* background: rgba(18, 15, 23, 0.85); */
   border-radius: 12px;
   padding: 0.5em 0.6em;
   width: fit-content;
@@ -103,15 +103,18 @@
 }
 
 .magic-bento-card__title {
-  font-weight: 400;
-  font-size: 16px;
-  margin: 0 0 0.25em;
+ font-weight: 700;
+  color: #06b6d4;
+  font-size: 24px;
+  letter-spacing: 0.5px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .magic-bento-card__description {
-  font-size: 12px;
-  line-height: 1.2;
-  opacity: 0.9;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.75);
+   font-family: 'Inter', sans-serif; 
 }
 
 .magic-bento-card--text-autohide .magic-bento-card__title,
@@ -267,4 +270,37 @@
 .bento-section {
   position: relative;
   user-select: none;
+}
+
+.animate-text-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: textReveal 0.8s ease forwards;
+}
+
+@keyframes textReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ── Fifth card: text visible by default, stars hidden ── */
+.magic-bento-card--fifth .glowing-stars-bg {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.magic-bento-card--fifth:hover .glowing-stars-bg {
+  opacity: 1;
+}
+
+.magic-bento-card--fifth .card-text-layer {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+/* Optional: slightly dim text on hover so stars shine through */
+.magic-bento-card--fifth:hover .card-text-layer {
+  opacity: 0.15;
 }

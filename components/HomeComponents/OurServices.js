@@ -9,6 +9,7 @@ import {
   FaPalette, FaBullhorn, FaBrush, FaBrain,
 } from "react-icons/fa";
 import { SiGoogleanalytics } from "react-icons/si";
+import SpotlightCard, { Spotlight } from "../SpotlightCard";
 
 /* ── dot-grid bg ── */
 const StyledPattern = styled.div`
@@ -40,6 +41,7 @@ function ServiceCard({ service, refCallback }) {
   const { icon, title, desc, color, rgb } = service;
   const glow = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.28)`;
   return (
+    
     <div ref={refCallback}
       className="relative w-[220px] min-h-[180px] rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer"
       style={{
@@ -141,6 +143,7 @@ export default function OurServicesWithWires() {
   const rafRef       = useRef(null);
   const roRef        = useRef(null);
   const [, setReady] = useState(false);
+  const cardRefs = useRef([]);
 
   const { ref: sectionRef, inView } = useInView({ threshold: 0.15, triggerOnce: true });
   const topCtrl = useAnimation(), botCtrl = useAnimation();
@@ -219,7 +222,7 @@ export default function OurServicesWithWires() {
                                      ...botCards.filter(Boolean).map(r => r.right));
 
       // Outer routing margin: 32px beyond the outermost card edge
-      const OUTER_MARGIN = 32;
+      const OUTER_MARGIN = 0;
       const leftRail  = allCardsLeft  - OUTER_MARGIN;
       const rightRail = allCardsRight + OUTER_MARGIN;
 
@@ -296,6 +299,7 @@ export default function OurServicesWithWires() {
       const botGapTop   = Math.max(...botPinBots);
       const botGapBot   = Math.min(...botCardTops);
       const botGap      = Math.max(botGapBot - botGapTop, 60);
+      
 
       for (let i = 0; i < 4; i++) {
         const card = botCards[i];
@@ -442,7 +446,7 @@ export default function OurServicesWithWires() {
         const a     = 0.5 + pulse * 0.5;
 
         ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r},${g},${b},${a})`; ctx.fill();
+        ctx.fillStyle = `rgba(65,78,108,0.32)`; ctx.fill();
 
         const pg = ctx.createRadialGradient(x, y, 0, x, y, 14);
         pg.addColorStop(0, `rgba(${r},${g},${b},${a * 0.7})`);
@@ -455,15 +459,16 @@ export default function OurServicesWithWires() {
       paths.forEach(({ cardPt, rgb }) => {
         const [r, g, b] = rgb;
         const { x, y }  = cardPt;
+        
         const pulse = (Math.sin(ts * 0.0025 + x * 0.035) + 1) / 2;
         const a     = 0.55 + pulse * 0.45;
 
-        ctx.beginPath(); ctx.arc(x, y, 3.4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r},${g},${b},${a})`; ctx.fill();
+        // ctx.beginPath(); ctx.arc(x, y, 3.4, 0, Math.PI * 2);
+        // ctx.fillStyle = `rgba(${r},${g},${b},${a})`; ctx.fill();
 
-        ctx.beginPath(); ctx.arc(x, y, 6.5, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${r},${g},${b},${a * 0.38})`;
-        ctx.lineWidth = 1.1; ctx.stroke();
+        // ctx.beginPath(); ctx.arc(x, y, 6.5, 0, Math.PI * 2);
+        // ctx.strokeStyle = `rgba(${r},${g},${b},${a * 0.38})`;
+        // ctx.lineWidth = 1.1; ctx.stroke();
 
         const jg = ctx.createRadialGradient(x, y, 0, x, y, 22);
         jg.addColorStop(0,   `rgba(${r},${g},${b},${a * 0.45})`);
@@ -507,6 +512,11 @@ export default function OurServicesWithWires() {
       style={{ paddingTop: "72px", paddingBottom: "72px" }}
     >
       <Pattern />
+
+      <SpotlightCard
+        className="absolute top-20 left-0 md:left-60 md:-top-20 pointer-events-none"
+        fill="#06B6D4"
+      />
 
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "radial-gradient(ellipse 65% 50% at 50% 50%,rgba(6,182,212,0.07) 0%,transparent 65%)"

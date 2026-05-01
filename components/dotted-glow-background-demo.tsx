@@ -48,7 +48,7 @@ export const DottedGlowBackground = ({
   radius = 2,
   color = "rgba(0,0,0,0.7)",
   darkColor,
-  glowColor = "rgba(0, 170, 255, 0.85)",
+  glowColor = "rgba(0, 172, 193, 1)",
   darkGlowColor,
   colorLightVar,
   colorDarkVar,

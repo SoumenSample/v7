@@ -315,8 +315,8 @@ export default function RootLayout({ children }) {
   style={{
     cursor:
       resolvedTheme === "dark"
-        ? "url('/cursorblack.png') 16 16, default"
-        : "url('/cursor.png') 16 16, default",
+        ? "url('') 16 16, default"
+        : "url('') 16 16, default",
   }}>
         {/* GTM noscript */}
         <noscript>

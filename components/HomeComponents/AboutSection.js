@@ -303,7 +303,7 @@ import MagicBento from '../../components/MagicBento.jsx'
   return(
      <section className="relative z-0 py-16 bg-black grid w-full items-center justify-center">
 <MagicBento 
-  textAutoHide={true}
+  textAutoHide={false}
   enableStars={false}
   enableSpotlight
   enableBorderGlow={true}

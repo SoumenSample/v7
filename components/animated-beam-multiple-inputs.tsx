@@ -1,11 +1,7 @@
 "use client"
 
 import React, { forwardRef, useRef } from "react"
-import {
-  FaLaptopCode, FaMobileAlt, FaCode,
-  FaPalette, FaBullhorn, FaBrush, FaBrain,
-} from "react-icons/fa";
-import { SiGoogleanalytics } from "react-icons/si";
+
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
 
@@ -17,7 +13,7 @@ const Circle = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "border-border z-10 flex size-10 items-center justify-center rounded-full border-2 bg-white p-2 text-black/80 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+        "border-border z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
         className
       )}
     >
@@ -41,48 +37,36 @@ export default function AnimatedBeamMultipleOutputDemo({
   const div5Ref = useRef<HTMLDivElement>(null)
   const div6Ref = useRef<HTMLDivElement>(null)
   const div7Ref = useRef<HTMLDivElement>(null)
-  const div8Ref = useRef<HTMLDivElement>(null)
-  const div9Ref = useRef<HTMLDivElement>(null)
 
   return (
     <div
       className={cn(
-        "absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden p-8",
+        "relative flex h-[500px] w-full items-center justify-center overflow-hidden p-10",
         className
       )}
       ref={containerRef}
     >
-      <div className="flex size-full flex-row items-center justify-between gap-10">
-        <div className="flex flex-col justify-center gap-2 py-6">
+      <div className="flex size-full max-w-lg flex-row items-stretch justify-between gap-10">
+        <div className="flex flex-col justify-center gap-2">
           <Circle ref={div1Ref}>
-            <FaBrain />
+            <Icons.googleDrive />
           </Circle>
           <Circle ref={div2Ref}>
-            <FaMobileAlt />
+            <Icons.googleDocs />
           </Circle>
           <Circle ref={div3Ref}>
-            <FaLaptopCode />
+            <Icons.whatsapp />
           </Circle>
           <Circle ref={div4Ref}>
-            <FaPalette />
+            <Icons.messenger />
           </Circle>
           <Circle ref={div5Ref}>
-            <FaBullhorn />
-          </Circle>
-          <Circle ref={div8Ref}>
-            <FaBrush />
-          </Circle>
-          <Circle ref={div9Ref}>
-            <SiGoogleanalytics />
+            <Icons.notion />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
           <Circle ref={div6Ref} className="size-16">
-            <img
-              src="/logo2%20copy.png"
-              alt="Logo"
-              className="h-8 w-8"
-            />
+            <Icons.openai />
           </Circle>
         </div>
         <div className="flex flex-col justify-center">
@@ -115,16 +99,6 @@ export default function AnimatedBeamMultipleOutputDemo({
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div5Ref}
-        toRef={div6Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div8Ref}
-        toRef={div6Ref}
-      />
-      <AnimatedBeam
-        containerRef={containerRef}
-        fromRef={div9Ref}
         toRef={div6Ref}
       />
       <AnimatedBeam

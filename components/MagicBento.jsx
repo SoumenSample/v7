@@ -8,6 +8,9 @@ import { cn } from '../lib/utils';
 import { GlowingStarsBackgroundCard } from './ui/glowing-stars';
 import { Globe } from './ui/globe';
 import AnimatedBeamMultipleOutputDemo from './animated-beam-multiple-inputs';
+import { DottedGlowBackground } from './ui/dotted-glow-background';
+import { Cobe } from './ui/cobe-globe';
+import SpotlightCard from './SpotlightCard';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
@@ -17,9 +20,9 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   { color: '#120F17', title: 'Our Mission',     description: 'To empower businesses through innovative digital solutions that blend creativity, technology, and strategy—helping brands grow, connect, and succeed in the digital world.',        label: ''     },
   { color: '#120F17', title: 'Our Vision',     description: 'To become a global leader in digital transformation, setting new standards in web, app, and software development through innovation, excellence, and client success.',       label: ''     },
-  { color: '#120F17', title: 'At Cyberspace Works, we combine innovation, design, and technology to create digital solutions that drive real results.', description: 'ur team of experts specializes in web, app, and software development—empowering businesses to grow smarter, faster, and stronger. With a focus on user experience, performance, and reliability, we turn complex challenges into seamless digital experiences that deliver measurable success.',    label: 'About Us'     },
+  { color: '#120F17', title: 'At Cyberspace Works, we combine innovation, design, and technology to create digital solutions that drive real results.', description: 'Our team of experts specializes in web, app, and software development—empowering businesses to grow smarter, faster, and stronger. With a focus on user experience, performance, and reliability, we turn complex challenges into seamless digital experiences that deliver measurable success.',    label: ''     },
   { color: '#120F17', title: 'Automation',    description: 'Streamline workflows',        label: 'Efficiency'   },
-  { color: '#120F17', title: '',   description: 'Cyberspace Works organizes all your needs under a single roof.',      label: 'Scattered Ideas are Bad for Business' },
+  { color: '#120F17', title: 'we organize all your Scattered Ideas.',   description: '',      label: '' },
   { color: '#120F17', title: 'Security',      description: 'Enterprise-grade protection', label: 'Protection'   }
 ];
 
@@ -396,6 +399,23 @@ const ParticleCard = ({
   );
 };
 
+// Replace GlowingStarsBackgroundWrapped with a hover-aware version
+const GlowingStarsBackgroundWrapped = ({ isHovered }) => (
+  <div
+    style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 1,
+      pointerEvents: 'none',
+      
+    }}
+  >
+    <GlowingStarsBackgroundCard allGlow={isHovered} />
+  </div>
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // GlobalSpotlight
 // ─────────────────────────────────────────────────────────────────────────────
@@ -487,14 +507,30 @@ const BackgroundBeamsBackground = () => (
     <BackgroundBeams />
   </div>
 );
-
+// In your component file, create a wrapper:
+const CobeBackground = () => (
+  <div style={{
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}>
+    <div style={{ width: 300, height: 300 }}>
+      <Cobe />
+    </div>
+  </div>
+);
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared card content
 // ─────────────────────────────────────────────────────────────────────────────
 const CardContent = ({ card, isFirst, isThird, isFourth, isFifth, isSixth, hideDescription = false, hideHeader = false }) => (
   <>
     {/* Render animated backgrounds after children so particles are above */}
-    <div className="magic-bento-card__text" style={{ position: 'relative', zIndex: 2 }}>
+    <div className="magic-bento-card__text" style={{ position: 'relative', zIndex: 2, pointerEvents: 'none' }}>
       {!hideHeader && (
         <>
           <div className="magic-bento-card__header" style={{ position: 'relative', zIndex: 2 }}>
@@ -503,18 +539,27 @@ const CardContent = ({ card, isFirst, isThird, isFourth, isFifth, isSixth, hideD
           <div className="magic-bento-card__content" style={{ position: 'relative', zIndex: 2 }}>
             <h2 className="magic-bento-card__title">{card.title}</h2>
             {!hideDescription && (
-              <p className="magic-bento-card__description">{card.description}</p>
+              <p
+  className={`magic-bento-card__description ${
+    isFifth ? "animate-text-reveal" : ""
+  }`}
+>
+  {card.description}
+</p>
             )}
           </div>
         </>
       )}
     </div>
     {/* Backgrounds rendered after content so particles are above */}
-    {isFirst  && <DotFieldBackground />}
+    {/* import SpotlightCard from './SpotlightCard'; */}
+  
+
+    {isFirst  && <DottedGlowBackground/>}
     {isThird  && <BackgroundBeamsBackground />}
     {isFourth && <AnimatedBeamMultipleOutputDemo />}
-    {isFifth  && <GlowingStarsBackgroundCard />}
-    {isSixth && <Globe/>}
+    {isFifth  && <GlowingStarsBackgroundWrapped />}
+    {isSixth && <CobeBackground/>}
   </>
 );
 
@@ -548,13 +593,14 @@ const MagicBento = ({
           const isThird  = index === 2;                 // BackgroundBeams
           const isFourth = index === 3;                 // AnimatedBeam
           const isFifth  = index === 4;  
-          const isSixth =index ===5               // GlowingStars
+          const isSixth =index ===5;        // GlowingStars
 
           const isMission = index === 0;
           const isVision = index === 1;
           const baseClassName = `magic-bento-card ${isMission ? 'magic-bento-card--mission' : ''} ${isVision ? 'magic-bento-card--vision' : ''} ${textAutoHide ? 'magic-bento-card--text-autohide' : ''} ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''}`;
           const cardStyle = {
-            backgroundColor: card.color,
+            backgroundColor: 'rgba(18, 15, 23, 0.7)',
+            backdropFilter: 'blur(10px)',
             '--glow-color': glowColor,
             position: 'relative',
             overflow: 'hidden',
@@ -573,17 +619,24 @@ const MagicBento = ({
                 clickEffect={clickEffect}
                 enableMagnetism={enableMagnetism}
               >
-                <CardContent
-                  card={card}
-                  isFirst={isFirst}
-                  isThird={isThird}
-                  isFourth={isFourth}
-                  isFifth={isFifth}
-                  isSixth={isSixth}
-                  hideDescription={isFourth}
-                  hideHeader={isFourth}
-                />
+                 <SpotlightCard
+    className="custom-spotlight-card"
+    spotlightColor="rgba(0, 229, 255, 0.2)"
+    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
+  >
+    <CardContent
+      card={card}
+      isFirst={isFirst}
+      isThird={isThird}
+      isFourth={isFourth}
+      isFifth={isFifth}
+      isSixth={isSixth}
+      hideDescription={isFourth}
+      hideHeader={isFourth}
+    />
+  </SpotlightCard>
               </ParticleCard>
+            
             );
           }
 
