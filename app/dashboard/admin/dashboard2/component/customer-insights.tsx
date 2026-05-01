@@ -1,22 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Users, MapPin, TrendingUp, Target, ArrowUpIcon, UserIcon } from "lucide-react"
-
-const customerGrowthData = [
-  { month: "Jan", new: 245, returning: 890, churn: 45 },
-  { month: "Feb", new: 312, returning: 934, churn: 52 },
-  { month: "Mar", new: 289, returning: 1023, churn: 38 },
-  { month: "Apr", new: 456, returning: 1156, churn: 61 },
-  { month: "May", new: 523, returning: 1298, churn: 47 },
-  { month: "Jun", new: 634, returning: 1445, churn: 55 },
-]
+import { Users, MapPin, TrendingUp, Target, ArrowUpIcon, UserIcon, Loader2 } from "lucide-react"
 
 const chartConfig = {
   new: {
@@ -33,24 +24,50 @@ const chartConfig = {
   },
 }
 
-const demographicsData = [
-  { ageGroup: "18-24", customers: 2847, percentage: "18.0%", growth: "+15.2%", growthColor: "text-green-600" },
-  { ageGroup: "25-34", customers: 4521, percentage: "28.5%", growth: "+8.7%", growthColor: "text-green-600" },
-  { ageGroup: "35-44", customers: 3982, percentage: "25.1%", growth: "+3.4%", growthColor: "text-blue-600" },
-  { ageGroup: "45-54", customers: 2734, percentage: "17.2%", growth: "+1.2%", growthColor: "text-orange-600" },
-  { ageGroup: "55+", customers: 1763, percentage: "11.2%", growth: "-2.1%", growthColor: "text-red-600" },
-]
-
-const regionsData = [
-  { region: "North America", customers: 6847, revenue: "₹847,523", growth: "+12.3%", growthColor: "text-green-600" },
-  { region: "Europe", customers: 4521, revenue: "₹563,891", growth: "+9.7%", growthColor: "text-green-600" },
-  { region: "Asia Pacific", customers: 2892, revenue: "₹321,456", growth: "+18.4%", growthColor: "text-blue-600" },
-  { region: "Latin America", customers: 1123, revenue: "₹187,234", growth: "+15.8%", growthColor: "text-green-600" },
-  { region: "Others", customers: 464, revenue: "₹67,891", growth: "+5.2%", growthColor: "text-orange-600" },
-]
-
 export function CustomerInsights() {
   const [activeTab, setActiveTab] = useState("growth")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [customerGrowthData, setCustomerGrowthData] = useState([])
+  const [demographicsData, setDemographicsData] = useState([])
+  const [regionsData, setRegionsData] = useState([])
+  const [metrics, setMetrics] = useState({
+    totalClients: 0,
+    growthPercentage: "+0%",
+    conversionRate: "0%",
+  })
+
+  useEffect(() => {
+    const fetchInsights = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch("/api/insights")
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch insights data")
+        }
+
+        const data = await response.json()
+        
+        setCustomerGrowthData(data.growth.data)
+        setDemographicsData(data.demographics)
+        setRegionsData(data.regions)
+        setMetrics({
+          totalClients: data.growth.totalClients,
+          growthPercentage: data.growth.growthPercentage,
+          conversionRate: data.growth.conversionRate,
+        })
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching insights:", err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInsights()
+  }, [])
 
   return (
     <Card className="h-fit">
