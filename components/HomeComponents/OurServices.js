@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -15,63 +14,138 @@ import SpotlightCard, { Spotlight } from "../SpotlightCard";
 const StyledPattern = styled.div`
   position: absolute; inset: 0; width: 100%; height: 100%;
   pointer-events: none; z-index: 0;
-  background-image: radial-gradient(rgba(103,232,249,0.2) 1px, transparent 1px);
-  background-size: 22px 22px; opacity: 0.45;
-  mask-image: linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom,transparent 0%,black 12%,black 88%,transparent 100%);
+  // background-image: radial-gradient(rgba(6,182,212,0.55) 1.5px, transparent 1.5px);
+    background-image: radial-gradient(rgba(14,116,144,0.55) 1.5px, transparent 1.5px);
+
+  background-size: 22px 22px; opacity: 0.75;
+  mask-image: linear-gradient(to bottom,transparent 0%,black 18%,black 82%,transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,transparent 0%,black 18%,black 82%,transparent 100%);
 `;
 const Pattern = () => <StyledPattern />;
 
 /* ── services ── */
 const TOP_SERVICES = [
-  { icon:<FaBrain size={34}/>,      title:"AI & Intelligent Systems", desc:"Unlock AI power through intelligent automation & machine learning.", color:"#8B5CF6", rgb:[139,92,246]  },
-  { icon:<FaLaptopCode size={34}/>, title:"Web Development",          desc:"Crafting responsive and dynamic websites tailored to your needs.",  color:"#06B6D4", rgb:[6,182,212]   },
-  { icon:<FaMobileAlt size={34}/>,  title:"App Development",          desc:"Building innovative and user-friendly mobile applications.",        color:"#22C55E", rgb:[34,197,94]   },
-  { icon:<FaCode size={34}/>,       title:"Software Development",     desc:"Custom software solutions to optimize your business processes.",    color:"#10B981", rgb:[16,185,129]  },
+  { icon:<FaBrain size={34}/>,      title:"AI & Intelligent Systems", desc:"Unlock AI power through intelligent automation & machine learning.", color:"#047857", rgb:[4,120,87]    },  // emerald-700
+  { icon:<FaLaptopCode size={34}/>, title:"Web Development",          desc:"Crafting responsive and dynamic websites tailored to your needs.",  color:"#0f766e", rgb:[15,118,110]  },  // teal-700
+  { icon:<FaMobileAlt size={34}/>,  title:"App Development",          desc:"Building innovative and user-friendly mobile applications.",        color:"#0e7490", rgb:[14,116,144]  },  // cyan-700
+  { icon:<FaCode size={34}/>,       title:"Software Development",     desc:"Custom software solutions to optimize your business processes.",    color:"#0369a1", rgb:[3,105,161]   },  // sky-700
 ];
 const BOTTOM_SERVICES = [
-  { icon:<FaPalette size={34}/>,        title:"UI/UX Design",          desc:"Creating intuitive and visually appealing user interfaces.",       color:"#14B8A6", rgb:[20,184,166]  },
-  { icon:<FaBullhorn size={34}/>,       title:"Digital Marketing",     desc:"Boost your online presence with targeted marketing strategies.",   color:"#38BDF8", rgb:[56,189,248]  },
-  { icon:<FaBrush size={34}/>,          title:"Graphic Design",        desc:"Designing stunning visuals to enhance your brand identity.",       color:"#3B82F6", rgb:[59,130,246]  },
-  { icon:<SiGoogleanalytics size={34}/>,title:"Research & Analytics",  desc:"We help businesses make sharper, faster decisions.",               color:"#6366F1", rgb:[99,102,241]  },
+  { icon:<FaPalette size={34}/>,        title:"UI/UX Design",          desc:"Creating intuitive and visually appealing user interfaces.",       color:"#1d4ed8", rgb:[29,78,216]   },  // blue-700
+  { icon:<FaBullhorn size={34}/>,       title:"Digital Marketing",     desc:"Boost your online presence with targeted marketing strategies.",   color:"#4338ca", rgb:[67,56,202]   },  // indigo-700
+  { icon:<FaBrush size={34}/>,          title:"Graphic Design",        desc:"Designing stunning visuals to enhance your brand identity.",       color:"#6d28d9", rgb:[109,40,217]  },  // violet-700
+  { icon:<SiGoogleanalytics size={34}/>,title:"Research & Analytics",  desc:"We help businesses make sharper, faster decisions.",               color:"#7e22ce", rgb:[126,34,206]  },  // purple-700
 ];
 
 /* ── service card ── */
-function ServiceCard({ service, refCallback }) {
+function ServiceCard({ service, refCallback, cardIndex, isBottom }) {
   const { icon, title, desc, color, rgb } = service;
-  const glow = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.28)`;
+  const cardRef = useRef(null);
+  const spotlightRef = useRef(null);
+  const flashRef = useRef(null);
+
+  // Expose flash method via a global registry
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (!window.__cardFlashRegistry) window.__cardFlashRegistry = {};
+      window.__cardFlashRegistry[cardIndex] = () => {
+        const el = flashRef.current;
+        if (!el) return;
+        // Cancel any in-progress fade
+        clearTimeout(el._flashTimer);
+        // Snap to visible, then smoothly fade out
+        el.style.transition = "opacity 0.08s ease-in";
+        el.style.opacity = "1";
+        el._flashTimer = setTimeout(() => {
+          el.style.transition = "opacity 0.6s ease-out";
+          el.style.opacity = "0";
+        }, 80);
+      };
+    }
+    return () => {
+      if (typeof window !== "undefined" && window.__cardFlashRegistry) {
+        delete window.__cardFlashRegistry[cardIndex];
+      }
+    };
+  }, [cardIndex]);
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+    const spotlight = spotlightRef.current;
+    if (!card || !spotlight) return;
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + "%";
+    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + "%";
+    spotlight.style.opacity = "1";
+    spotlight.style.background = `radial-gradient(circle 110px at ${x} ${y}, rgba(0,210,255,0.13) 0%, transparent 70%)`;
+    card.style.borderColor = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.45)`;
+  };
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    const spotlight = spotlightRef.current;
+    if (!card || !spotlight) return;
+    spotlight.style.opacity = "0";
+    spotlight.style.background = "";
+    card.style.borderColor = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.20)`;
+    card.style.transform = "translateY(0)";
+  };
+
+  const handleMouseEnter = (e) => {
+    if (cardRef.current) cardRef.current.style.transform = "translateY(-3px)";
+  };
+
   return (
-    
-    <div ref={refCallback}
+    <div
+      ref={(el) => { cardRef.current = el; if (refCallback) refCallback(el); }}
       className="relative w-[220px] min-h-[180px] rounded-2xl flex-shrink-0 overflow-hidden cursor-pointer"
       style={{
-        background:"rgba(8,10,18,0.90)",
-        border:`1px solid rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.20)`,
-        boxShadow:`0 0 22px ${glow},inset 0 0 14px rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.05)`,
-        backdropFilter:"blur(14px)", transition:"box-shadow 0.3s,transform 0.3s",
+        background: "rgba(8,10,18,0.90)",
+        border: `1px solid rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.20)`,
+        boxShadow: `inset 0 0 0px rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`,
+        backdropFilter: "blur(14px)",
+        transition: "border-color 0.3s, transform 0.3s",
       }}
-      onMouseEnter={e=>{
-        e.currentTarget.style.boxShadow=`0 0 40px rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.55),inset 0 0 22px rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.10)`;
-        e.currentTarget.style.transform="translateY(-3px)";
-      }}
-      onMouseLeave={e=>{
-        e.currentTarget.style.boxShadow=`0 0 22px ${glow},inset 0 0 14px rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.05)`;
-        e.currentTarget.style.transform="translateY(0)";
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="absolute top-0 left-0 w-28 h-28 -translate-x-12 -translate-y-12 blur-2xl opacity-20 pointer-events-none"
-        style={{background:`radial-gradient(circle,${color},transparent 70%)`}}/>
-      <div className="absolute bottom-0 right-0 w-28 h-28 translate-x-12 translate-y-12 blur-2xl opacity-20 pointer-events-none"
-        style={{background:`radial-gradient(circle,${color},transparent 70%)`}}/>
-      <div className="relative z-10 p-5 flex flex-col h-full">
-        <div className="mb-4" style={{color}}>{icon}</div>
-        <h3 className="text-[13.5px] font-bold text-white flex items-center gap-1.5 mb-2 leading-snug">
+      {/* Cyan hover spotlight layer */}
+      <div
+        ref={spotlightRef}
+        style={{
+          position: "absolute", inset: 0, borderRadius: "1rem",
+          opacity: 0, transition: "opacity 0.25s", pointerEvents: "none", zIndex: 1,
+        }}
+      />
+
+      {/* Wire-triggered flash line — bottom edge for top cards, top edge for bottom cards */}
+      <div
+        ref={flashRef}
+        style={{
+          position: "absolute",
+          ...(isBottom ? { top: 0 } : { bottom: 0 }),
+          left: "10%", width: "80%", height: "1px",
+          background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+          opacity: 0,
+          transition: "opacity 0.6s ease-out",
+          pointerEvents: "none",
+          zIndex: 2,
+        }}
+      />
+
+      {/* Corner decorative blobs — removed permanent glow, kept subtle ambient */}
+      <div className="absolute top-0 left-0 w-28 h-28 -translate-x-12 -translate-y-12 blur-2xl opacity-[0.04] pointer-events-none"
+        style={{ background: `radial-gradient(circle,${color},transparent 70%)` }} />
+      <div className="absolute bottom-0 right-0 w-28 h-28 translate-x-12 translate-y-12 blur-2xl opacity-[0.04] pointer-events-none"
+        style={{ background: `radial-gradient(circle,${color},transparent 70%)` }} />
+
+      <div className="relative z-10 p-5 flex flex-col items-center h-full">
+        <div className="mb-4" style={{ color }}>{icon}</div>
+        <h3 className="text-[13.5px] font-bold text-white text-center mb-2 leading-snug">
           {title}
-          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" className="opacity-50 flex-shrink-0">
-            <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
-          </svg>
         </h3>
-        <p className="text-[11.5px] text-gray-400 leading-relaxed">{desc}</p>
+        <p className="text-[11.5px] text-gray-400 leading-relaxed text-center">{desc}</p>
       </div>
     </div>
   );
@@ -98,40 +172,7 @@ function ptOnLine(pts, t) {
   return pts[pts.length - 1];
 }
 
-/*
-  ════════════════════════════════════════════════════════════════════
-  WIRE ROUTING — matches the hand-drawn diagram exactly
-  ════════════════════════════════════════════════════════════════════
 
-  TOP ROW  (cards exit from their BOTTOM edge, enter chip TOP pins):
-  ─────────────────────────────────────────────────────────────────
-  Card 0 (AI, far-left):
-    → drops a little down from card bottom
-    → jogs LEFT to a margin beyond left edge of all cards
-    → drops straight down (long vertical run on the far-left)
-    → turns RIGHT at mid-gap level
-    → arrives at pin-0 (leftmost top pin) from the left
-    Route: cardBottom → (cardCx, cardY+drop) → (leftMargin, cardY+drop)
-            → (leftMargin, pinY-offset) → (pinX, pinY-offset) → (pinX, pinY)
-
-  Card 1 (Web Dev):
-    → drops straight down, slight horizontal jog, into pin-2
-    Simple Z: cardBottom → midY → pinX,midY → pinX,pinY
-
-  Card 2 (App Dev):
-    → drops straight down, slight horizontal jog, into pin-4
-    Simple Z: cardBottom → midY → pinX,midY → pinX,pinY
-
-  Card 3 (Software Dev, far-right):
-    → mirrors Card 0 but on the right side
-    Route: cardBottom → (cardCx, cardY+drop) → (rightMargin, cardY+drop)
-            → (rightMargin, pinY-offset) → (pinX, pinY-offset) → (pinX, pinY)
-
-  BOTTOM ROW  (cards exit from their TOP edge, enter chip BOTTOM pins):
-  ─────────────────────────────────────────────────────────────────
-  Mirror of top row — exactly the same logic flipped vertically.
-  ════════════════════════════════════════════════════════════════════
-*/
 
 /* ═══════════════ MAIN ═══════════════ */
 export default function OurServicesWithWires() {
@@ -187,6 +228,9 @@ export default function OurServicesWithWires() {
     */
     const TOP_PIN_SLOTS    = [0, 2, 4, 6];
     const BOTTOM_PIN_SLOTS = [0, 2, 4, 6];
+
+    // Track last flash state per card to avoid re-triggering
+    const lastFlashCycle = {};
 
     const buildPaths = () => {
       const cr = canvas.getBoundingClientRect();
@@ -252,16 +296,15 @@ export default function OurServicesWithWires() {
 
         if (i === 0) {
           // Far-left card: go left to outer rail, drop down, turn right to pin
-          // Drop a little below card first so the horizontal exit is clear
-          const exitY   = cardY + topGap * 0.12;   // small drop below card
-          const cornerY = pinY - topGap * 0.12;    // rise level above pin entry
+          const exitY   = cardY + topGap * 0.12;
+          const cornerY = pinY - topGap * 0.12;
           pts = [
-            { x: cardCx,   y: cardY    },   // card bottom centre
-            { x: cardCx,   y: exitY    },   // short drop
-            { x: leftRail, y: exitY    },   // run left to outer rail
-            { x: leftRail, y: cornerY  },   // drop down outside everything
-            { x: pinX,     y: cornerY  },   // run right to pin column
-            { x: pinX,     y: pinY     },   // enter pin
+            { x: cardCx,   y: cardY    },
+            { x: cardCx,   y: exitY    },
+            { x: leftRail, y: exitY    },
+            { x: leftRail, y: cornerY  },
+            { x: pinX,     y: cornerY  },
+            { x: pinX,     y: pinY     },
           ];
         } else if (i === 3) {
           // Far-right card: mirror of i=0
@@ -276,10 +319,6 @@ export default function OurServicesWithWires() {
             { x: pinX,      y: pinY     },
           ];
         } else {
-          // Inner cards (i=1 Web Dev, i=2 App Dev): simple Z with staggered midY
-          // i=1 → midY closer to pin (25% from top of gap)
-          // i=2 → midY closer to card (75% from top of gap)
-          // (these two are symmetric and never share a Y level)
           const frac = i === 1 ? 0.35 : 0.65;
           const midY = topGapTop + topGap * frac;
           pts = [
@@ -290,7 +329,16 @@ export default function OurServicesWithWires() {
           ];
         }
 
-        paths.push({ pts: pts.slice().reverse(), rgb: svc.rgb, pinPt: { x: pinX, y: pinY }, cardPt: { x: cardCx, y: cardY } });
+        // Wire travels from chip → card (reversed), so cardPt is last pt (pts[0] after reverse)
+        paths.push({
+          pts: pts.slice().reverse(),
+          rgb: svc.rgb,
+          color: svc.color,
+          pinPt: { x: pinX, y: pinY },
+          cardPt: { x: cardCx, y: cardY },
+          cardIndex: i,
+          isBottom: false,
+        });
       }
 
       // ── BOTTOM ROW (exact vertical mirror of top) ──
@@ -299,7 +347,6 @@ export default function OurServicesWithWires() {
       const botGapTop   = Math.max(...botPinBots);
       const botGapBot   = Math.min(...botCardTops);
       const botGap      = Math.max(botGapBot - botGapTop, 60);
-      
 
       for (let i = 0; i < 4; i++) {
         const card = botCards[i];
@@ -315,9 +362,8 @@ export default function OurServicesWithWires() {
         let pts;
 
         if (i === 0) {
-          // Far-left card: go left to outer rail, rise up, turn right to pin
-          const exitY   = cardY - botGap * 0.12;   // small rise above card
-          const cornerY = pinY + botGap * 0.12;    // drop level below pin exit
+          const exitY   = cardY - botGap * 0.12;
+          const cornerY = pinY + botGap * 0.12;
           pts = [
             { x: cardCx,   y: cardY    },
             { x: cardCx,   y: exitY    },
@@ -327,7 +373,6 @@ export default function OurServicesWithWires() {
             { x: pinX,     y: pinY     },
           ];
         } else if (i === 3) {
-          // Far-right card: mirror of i=0
           const exitY   = cardY - botGap * 0.12;
           const cornerY = pinY + botGap * 0.12;
           pts = [
@@ -339,7 +384,6 @@ export default function OurServicesWithWires() {
             { x: pinX,      y: pinY     },
           ];
         } else {
-          // Inner cards: simple Z with staggered midY
           const frac = i === 1 ? 0.65 : 0.35;
           const midY = botGapTop + botGap * frac;
           pts = [
@@ -350,7 +394,15 @@ export default function OurServicesWithWires() {
           ];
         }
 
-        paths.push({ pts: pts.slice().reverse(), rgb: svc.rgb, pinPt: { x: pinX, y: pinY }, cardPt: { x: cardCx, y: cardY } });
+        paths.push({
+          pts: pts.slice().reverse(),
+          rgb: svc.rgb,
+          color: svc.color,
+          pinPt: { x: pinX, y: pinY },
+          cardPt: { x: cardCx, y: cardY },
+          cardIndex: i + 4,
+          isBottom: true,
+        });
       }
 
       // ── IDLE PINS ──
@@ -392,12 +444,44 @@ export default function OurServicesWithWires() {
 
     let lastTs = 0, tG = 0;
 
+    // ── Trail drawing helper ──
+    // Draws a gradient trail from t=tailT to t=headT along pts[],
+    // clamping t to [0,1] for ptOnLine. Segments where both endpoints
+    // are outside [0,1] are skipped (past the card end).
+    const drawTrail = (ctx, pts, r, g, b, tailT, headT) => {
+      const STEPS = 60;
+      const span  = headT - tailT;
+      if (span <= 0) return;
+      for (let i = 0; i < STEPS; i++) {
+        const tA = tailT + (i / STEPS)       * span;
+        const tB = tailT + ((i + 1) / STEPS) * span;
+        // Skip segments that are entirely outside the wire
+        if (tB < 0 || tA > 1) continue;
+        const clampA = Math.min(Math.max(tA, 0), 1);
+        const clampB = Math.min(Math.max(tB, 0), 1);
+        const pA = ptOnLine(pts, clampA);
+        const pB = ptOnLine(pts, clampB);
+        // Alpha: 0 at tail, 1 at head (position within the full trail)
+        const progress = (tA - tailT) / span;
+        const alpha    = progress * 0.95;
+        ctx.beginPath();
+        ctx.moveTo(pA.x, pA.y);
+        ctx.lineTo(pB.x, pB.y);
+        ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.lineWidth   = 2.4;
+        ctx.lineCap     = "round";
+        ctx.stroke();
+      }
+    };
+
     const draw = (ts) => {
       ctx.clearRect(0, 0, 99999, 99999);
       ctx.save();
 
+      // tG grows freely — never clamp/wrap here. Per-wire phase offset handles spacing.
+      // Cycle period = 1.0. We let rawT exceed 1 so the tail can fully enter the card
+      // before the cycle resets.
       tG += (ts - lastTs) * 0.00042;
-      if (tG > 1) tG -= 1;
       lastTs = ts;
 
       const { paths, idlePins } = buildPaths();
@@ -415,26 +499,34 @@ export default function OurServicesWithWires() {
       });
 
       /* 2 ── ANIMATED PULSE */
-      paths.forEach(({ pts, rgb }, idx) => {
-        const [r, g, b] = rgb;
-        const head     = (tG + idx * 0.115) % 1;
-        const trailLen = 0.22;
-        const tail     = Math.max(0, head - trailLen);
-        const STEPS    = 52;
+      // Model: each wire has a pulse that travels from pin (t=0) to card (t=1).
+      // The trail has length `trailLen` in t-space.
+      // headT = phase within [0, 1+trailLen) — the head can exceed 1.0, meaning
+      // it has already entered the card and the tail is still on the wire.
+      // Once tailT > 1 the whole trail has entered the card; cycle resets.
+      const TRAIL_LEN = 0.22;
+      const CYCLE     = 1.0 + TRAIL_LEN; // full period before next pulse starts
 
-        for (let i = 0; i < STEPS; i++) {
-          const tA  = tail + (i / STEPS)       * (head - tail);
-          const tB  = tail + ((i + 1) / STEPS) * (head - tail);
-          const pA  = ptOnLine(pts, tA);
-          const pB  = ptOnLine(pts, tB);
-          const alpha = (i / STEPS) * 0.95;
-          ctx.beginPath();
-          ctx.moveTo(pA.x, pA.y);
-          ctx.lineTo(pB.x, pB.y);
-          ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
-          ctx.lineWidth   = 2.4;
-          ctx.lineCap     = "round";
-          ctx.stroke();
+      paths.forEach(({ pts, rgb, cardIndex, cardPt }, idx) => {
+        const [r, g, b] = rgb;
+
+        // Phase within [0, CYCLE)
+        const rawPhase = (tG + idx * 0.115) % CYCLE;
+        const headT    = rawPhase;            // head position in wire-space [0..1+trailLen]
+        const tailT    = headT - TRAIL_LEN;   // tail position (can be negative at cycle start)
+
+        // Draw the gradient trail
+        drawTrail(ctx, pts, r, g, b, tailT, headT);
+
+        // ── Flash card when head first touches t=1 (card end) ──
+        const cycleKey = `card_${cardIndex}`;
+        const cycleNum = Math.floor((tG + idx * 0.115) / CYCLE);
+        if (headT >= 1.0 && tailT < 1.0 && lastFlashCycle[cycleKey] !== cycleNum) {
+          lastFlashCycle[cycleKey] = cycleNum;
+          if (typeof window !== "undefined" && window.__cardFlashRegistry) {
+            const flashFn = window.__cardFlashRegistry[cardIndex];
+            if (flashFn) flashFn();
+          }
         }
       });
 
@@ -455,27 +547,45 @@ export default function OurServicesWithWires() {
         ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); ctx.fill();
       });
 
-      /* 4 ── CARD-END JUNCTION GLOW */
-      paths.forEach(({ cardPt, rgb }) => {
+      /* 4 ── CARD-END JUNCTION GLOW
+         Glow is visible from when head reaches t=0.85 until the full tail
+         has entered the card (tailT reaches 1.0).
+         Window: headT in [0.85, 1.0+TRAIL_LEN] → maps to proximity [0→1→0].
+      */
+      paths.forEach(({ cardPt, rgb }, idx) => {
         const [r, g, b] = rgb;
         const { x, y }  = cardPt;
-        
+
+        const rawPhase = (tG + idx * 0.115) % CYCLE;
+        const headT    = rawPhase;
+        const tailT    = headT - TRAIL_LEN;
+
+        // Ramp IN:  headT from 0.97 → 1.0  (head approaching & entering card)
+        // Ramp OUT: tailT from 1.0 → 1.0+TRAIL_LEN  (tail sliding into card)
+        let proximity = 0;
+        if (headT >= 0.97 && tailT <= 1.0) {
+          // Head approaching card
+          proximity = Math.min((headT - 0.97) / 0.03, 1.0);
+        } else if (tailT > 1.0 && tailT <= CYCLE) {
+          // Tail still entering: fade out as tail slides in
+          proximity = 1.0 - ((tailT - 1.0) / TRAIL_LEN);
+        }
+        if (proximity <= 0) return;
+
         const pulse = (Math.sin(ts * 0.0025 + x * 0.035) + 1) / 2;
-        const a     = 0.55 + pulse * 0.45;
+        const a     = (0.6 + pulse * 0.4) * proximity;
 
-        // ctx.beginPath(); ctx.arc(x, y, 3.4, 0, Math.PI * 2);
-        // ctx.fillStyle = `rgba(${r},${g},${b},${a})`; ctx.fill();
+        // Inner bright dot
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${a * 0.9})`; ctx.fill();
 
-        // ctx.beginPath(); ctx.arc(x, y, 6.5, 0, Math.PI * 2);
-        // ctx.strokeStyle = `rgba(${r},${g},${b},${a * 0.38})`;
-        // ctx.lineWidth = 1.1; ctx.stroke();
-
-        const jg = ctx.createRadialGradient(x, y, 0, x, y, 22);
-        jg.addColorStop(0,   `rgba(${r},${g},${b},${a * 0.45})`);
-        jg.addColorStop(0.4, `rgba(${r},${g},${b},${a * 0.14})`);
+        // Outer soft halo
+        const jg = ctx.createRadialGradient(x, y, 0, x, y, 28);
+        jg.addColorStop(0,   `rgba(${r},${g},${b},${a * 0.55})`);
+        jg.addColorStop(0.35,`rgba(${r},${g},${b},${a * 0.22})`);
         jg.addColorStop(1,   `rgba(${r},${g},${b},0)`);
         ctx.fillStyle = jg;
-        ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, 28, 0, Math.PI * 2); ctx.fill();
       });
 
       /* 5 ── IDLE PIN GLOW */
@@ -512,6 +622,17 @@ export default function OurServicesWithWires() {
       style={{ paddingTop: "72px", paddingBottom: "72px" }}
     >
       <Pattern />
+
+      {/* Top fade — blends section edge into whatever is above */}
+      <div className="absolute top-0 left-0 w-full pointer-events-none" style={{
+        height: "120px", zIndex: 3,
+        background: "linear-gradient(to bottom, #030508 0%, transparent 100%)",
+      }} />
+      {/* Bottom fade — blends section edge into whatever is below */}
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none" style={{
+        height: "120px", zIndex: 3,
+        background: "linear-gradient(to top, #030508 0%, transparent 100%)",
+      }} />
 
       {/* <SpotlightCard
         className="absolute top-20 left-0 md:left-60 md:-top-20 pointer-events-none"
@@ -553,7 +674,12 @@ export default function OurServicesWithWires() {
           style={{ marginBottom: "72px" }}
         >
           {TOP_SERVICES.map((svc, i) => (
-            <ServiceCard key={svc.title} service={svc} refCallback={el => { boxRefs.current[i] = el; }} />
+            <ServiceCard
+              key={svc.title}
+              service={svc}
+              cardIndex={i}
+              refCallback={el => { boxRefs.current[i] = el; }}
+            />
           ))}
         </motion.div>
 
@@ -633,12 +759,12 @@ export default function OurServicesWithWires() {
             <div className="absolute bottom-[6px] left-[6px]  w-3 h-3 border-b border-l border-cyan-900/40" />
             <div className="absolute bottom-[6px] right-[6px] w-3 h-3 border-b border-r border-cyan-900/40" />
 
-            <span className="relative z-10 font-bold tracking-wide select-none" style={{
-              fontSize: "15px", color: "#67e8f9",
-              fontFamily: "'Syne',monospace", letterSpacing: "0.07em",
-            }}>
-              Cyberspace Works
-            </span>
+            <img 
+              src="/logo2 copy.png" 
+              alt="Cyberspace Works" 
+              className="relative z-10 select-none" 
+              style={{ height: "auto", maxHeight: "60px", maxWidth: "180px" }}
+            />
           </div>
         </div>
 
@@ -649,7 +775,13 @@ export default function OurServicesWithWires() {
           animate={botCtrl}
         >
           {BOTTOM_SERVICES.map((svc, i) => (
-            <ServiceCard key={svc.title} service={svc} refCallback={el => { boxRefs.current[i + 4] = el; }} />
+            <ServiceCard
+              key={svc.title}
+              service={svc}
+              cardIndex={i + 4}
+              isBottom={true}
+              refCallback={el => { boxRefs.current[i + 4] = el; }}
+            />
           ))}
         </motion.div>
 
