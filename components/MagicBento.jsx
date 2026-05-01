@@ -23,7 +23,7 @@ const cardData = [
   { color: '#120F17', title: 'At Cyberspace Works, we combine innovation, design, and technology to create digital solutions that drive real results.', description: 'Our team of experts specializes in web, app, and software development—empowering businesses to grow smarter, faster, and stronger. With a focus on user experience, performance, and reliability, we turn complex challenges into seamless digital experiences that deliver measurable success.',    label: ''     },
   { color: '#120F17', title: 'Automation',    description: 'Streamline workflows',        label: 'Efficiency'   },
   { color: '#120F17', title: 'we organize all your Scattered Ideas.',   description: '',      label: '' },
-  { color: '#120F17', title: 'Security',      description: 'Enterprise-grade protection', label: 'Protection'   }
+  { color: '#120F17', title: '',      description: '', label: 'We’re Borderless.'   }
 ];
 
 const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
