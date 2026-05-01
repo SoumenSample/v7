@@ -81,11 +81,13 @@ export default async function CalendarPage() {
             contentClassName="pl-0 pr-4 lg:pr-6"
           />
           <main className="flex-1 w-full overflow-x-hidden py-4 pr-4 pl-0 lg:py-6 lg:pr-6 lg:pl-0">
-            <Calendar
-              events={visibleEvents}
-              eventDates={visibleEventDates}
-              currentUserEmail={currentUserEmail}
-            />
+          <div className="px-4 lg:px-6 py-4 lg:py-6 h-full flex flex-col">
+              <Calendar
+                events={visibleEvents}
+                eventDates={visibleEventDates}
+                currentUserEmail={currentUserEmail}
+              />
+            </div>
           </main>
         </div>
       </div>
