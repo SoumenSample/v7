@@ -149,10 +149,10 @@ export default function AdminPayment() {
             </thead>
 
             {/* Body */}
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-black">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-gray-900/50">
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-gray-400 dark:text-gray-600">
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40">
                         <rect x="2" y="5" width="20" height="14" rx="2"/>
@@ -232,7 +232,7 @@ export default function AdminPayment() {
 
         {/* Footer */}
         {payments.length > 0 && (
-          <div className="px-5 py-3 bg-gray-50 dark:bg-white/5 border-t border-gray-200 dark:border-white/10 text-xs text-gray-400 dark:text-gray-600">
+          <div className="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
             Showing {payments.length} payment{payments.length !== 1 ? "s" : ""}
           </div>
         )}

@@ -246,10 +246,10 @@ export default function ClientContracts() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-black">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-gray-900/50">
               {contracts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center text-gray-400 dark:text-gray-600">
+                  <td colSpan={5} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -322,7 +322,7 @@ export default function ClientContracts() {
         </div>
 
         {contracts.length > 0 && (
-          <div className="px-5 py-3 bg-gray-50 dark:bg-white/5 border-t border-gray-200 dark:border-white/10 text-xs text-gray-400 dark:text-gray-600">
+          <div className="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-white/5 text-xs text-gray-500 dark:text-gray-400">
             Showing {contracts.length} contract{contracts.length !== 1 ? "s" : ""}
           </div>
         )}

@@ -499,7 +499,7 @@ export default function LoginPage() {
           </div>
 
           <div className="card-title">Welcome back</div>
-          <p className="card-desc">Sign in as admin, client, or employee. New users are created by admin only.</p>
+          <p className="card-desc">Good to see you again!</p>
 
           <div className="divider" />
 

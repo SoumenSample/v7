@@ -41,8 +41,8 @@ export default function UsersPage() {
   const [open, setOpen] = useState(false)
   const sourceSuggestions = ["Instagram", "Facebook", "LinkedIn", "Website", "WhatsApp", "Google", "Referral", "Other"]
   const leadStatusOptions = [
-    { value: "active", label: "Active", className: "bg-emerald-50 border-emerald-200 text-emerald-700" },
-    { value: "inactive", label: "Inactive", className: "bg-rose-50 border-rose-200 text-rose-700" },
+    { value: "active", label: "Active", className: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/30 dark:text-emerald-300" },
+    { value: "inactive", label: "Inactive", className: "bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-500/15 dark:border-rose-400/30 dark:text-rose-300" },
   ]
 
   const [formData, setFormData] = useState({
@@ -433,21 +433,21 @@ export default function UsersPage() {
         </Dialog>
 
         {/* ── Leads Table ── */}
-        <Card className="border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
-          <CardHeader className="px-6 py-5 border-b border-gray-100">
+        <Card className="overflow-hidden rounded-2xl border border-border/70 shadow-sm dark:border-white/15">
+          <CardHeader className="border-b border-border/70 px-6 py-5 dark:border-white/15">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base font-bold text-gray-900">Leads</CardTitle>
-                <CardDescription className="text-sm text-gray-500 mt-0.5">All captured leads in your pipeline</CardDescription>
+                <CardTitle className="text-base font-bold text-foreground">Leads</CardTitle>
+                <CardDescription className="mt-0.5 text-sm text-muted-foreground">All captured leads in your pipeline</CardDescription>
               </div>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 border border-gray-200">
+              <span className="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
                 {leads.length} total
               </span>
             </div>
           </CardHeader>
           <CardContent className="p-0">
             {loadingLeads ? (
-              <div className="flex items-center justify-center py-16 text-gray-400 text-sm gap-2">
+              <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
                 <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -456,34 +456,34 @@ export default function UsersPage() {
               </div>
             ) : leads.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted dark:bg-white/10">
+                  <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                   </svg>
                 </div>
-                <p className="text-sm font-medium text-gray-900">No leads yet</p>
-                <p className="text-xs text-gray-500 mt-1">Add your first lead to get started</p>
+                <p className="text-sm font-medium text-foreground">No leads yet</p>
+                <p className="mt-1 text-xs text-muted-foreground">Add your first lead to get started</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-gray-50/60">
-                      <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Contact</th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Services</th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Source</th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
-                      <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                    <tr className="border-b border-border/70 bg-muted/40 dark:border-white/15 dark:bg-white/5">
+                      <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Services</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Source</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Date</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Status</th>
                       <th className="px-4 py-3" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-border/70 dark:divide-white/15">
                     {leads.map((lead) => (
-                      <tr key={lead._id} className="hover:bg-gray-50/50 transition-colors align-top">
+                      <tr key={lead._id} className="align-top transition-colors hover:bg-muted/30 dark:hover:bg-white/5">
                         <td className="px-6 py-4">
-                          <p className="font-semibold text-gray-900 text-sm">{lead.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{lead.budget ? `₹${lead.budget}` : "No budget"}</p>
+                          <p className="text-sm font-semibold text-foreground">{lead.name}</p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">{lead.budget ? `₹${lead.budget}` : "No budget"}</p>
                           {lead.convertedToClient && (
                             <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                               ✓ Converted
@@ -491,29 +491,29 @@ export default function UsersPage() {
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <p className="text-sm text-gray-900 break-all">{lead.email}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{lead.phone}</p>
+                          <p className="break-all text-sm text-foreground">{lead.email}</p>
+                          <p className="mt-0.5 text-xs text-muted-foreground">{lead.phone}</p>
                         </td>
                         <td className="px-4 py-4 max-w-45">
                           <div className="flex flex-wrap gap-1">
                             {(lead.services || []).map((s, i) => (
-                              <span key={i} className="inline-flex rounded-md bg-gray-100 border border-gray-200 px-2 py-0.5 text-[11px] font-medium text-gray-700">
+                              <span key={i} className="inline-flex rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
                                 {s}
                               </span>
                             ))}
                           </div>
                           {lead.requirement && (
-                            <p className="mt-1.5 text-xs text-gray-400 line-clamp-2">{lead.requirement}</p>
+                            <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">{lead.requirement}</p>
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="inline-flex rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-[11px] font-medium text-gray-600 uppercase tracking-wide">
+                          <span className="inline-flex rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
                             {lead.source}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-xs text-gray-500 whitespace-nowrap">
+                        <td className="whitespace-nowrap px-4 py-4 text-xs text-muted-foreground">
                           {new Date(lead.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                          <p className="text-[11px] text-gray-400 mt-0.5">{new Date(lead.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground/80">{new Date(lead.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</p>
                         </td>
                         <td className="px-4 py-4">
                           {(() => {
@@ -528,23 +528,23 @@ export default function UsersPage() {
                         <td className="px-4 py-4">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-white/10">
                                 <MoreVertical className="size-4" />
                                 <span className="sr-only">Open actions</span>
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl border border-gray-200 bg-white shadow-lg p-1">
-                              <DropdownMenuItem className="rounded-lg text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-3 py-2" onClick={() => openEditModal(lead)}>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl border border-border bg-popover p-1 shadow-lg dark:border-white/15">
+                              <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2 text-sm text-popover-foreground hover:bg-muted" onClick={() => openEditModal(lead)}>
                                 Edit lead
                               </DropdownMenuItem>
                               {!lead.convertedToClient ? (
-                                <DropdownMenuItem className="rounded-lg text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-3 py-2" onClick={() => setShowConvertModal(lead._id)}>
+                                <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2 text-sm text-popover-foreground hover:bg-muted" onClick={() => setShowConvertModal(lead._id)}>
                                   Convert to client
                                 </DropdownMenuItem>
                               ) : (
-                                <DropdownMenuItem disabled className="rounded-lg text-sm text-gray-400 px-3 py-2">Converted</DropdownMenuItem>
+                                <DropdownMenuItem disabled className="rounded-lg px-3 py-2 text-sm text-muted-foreground">Converted</DropdownMenuItem>
                               )}
-                              <DropdownMenuSeparator className="my-1 bg-gray-100" />
+                              <DropdownMenuSeparator className="my-1 bg-border" />
                               <DropdownMenuItem
                                 variant="destructive"
                                 className="rounded-lg text-sm cursor-pointer px-3 py-2 text-red-600 hover:bg-red-50"

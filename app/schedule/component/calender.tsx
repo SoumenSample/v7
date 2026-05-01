@@ -22,7 +22,7 @@ export function Calendar({ events, eventDates, currentUserEmail, currentUserId }
       <div className="bg-background relative">
         <div className="flex gap-4" style={{ minHeight: "800px" }}>
           {/* Desktop Sidebar - Hidden on mobile/tablet, shown on extra large screens */}
-          <div className="hidden xl:block w-80 border rounded-lg overflow-hidden bg-background" style={{ flexShrink: 0 }}>
+          <div className="hidden xl:block w-80 rounded-lg border border-border/70 dark:border-white/15 overflow-hidden bg-background" style={{ flexShrink: 0 }}>
             <CalendarSidebar
               selectedDate={calendar.selectedDate}
               onDateSelect={calendar.handleDateSelect}
@@ -34,7 +34,7 @@ export function Calendar({ events, eventDates, currentUserEmail, currentUserId }
           </div>
           
           {/* Main Calendar Panel */}
-          <div className="flex-1 min-w-0 border rounded-lg overflow-hidden bg-background">
+          <div className="flex-1 min-w-0 rounded-lg border border-border/70 dark:border-white/15 overflow-hidden bg-background">
             <CalendarMain
               events={events}
               eventDates={eventDates}

@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, FolderIcon, UsersIcon, FileTextIcon, Settings2Icon, LifeBuoyIcon, ShoppingBagIcon, CommandIcon, TicketIcon, MessageSquareIcon, ReceiptIcon, UserCogIcon, UserRoundIcon, CalendarIcon, BookA, WalletCards, Handshake } from "lucide-react"
+import { LayoutDashboardIcon, FolderIcon, UsersIcon, FileTextIcon, Settings2Icon, LifeBuoyIcon, ShoppingBagIcon, CommandIcon, TicketIcon, MessageSquareIcon, ReceiptIcon, UserCogIcon, UserRoundIcon, CalendarIcon, BookA, WalletCards, Handshake, KanbanSquare } from "lucide-react"
 
 export function AppSidebar({
   role,
@@ -48,6 +48,11 @@ export function AppSidebar({
       title: "Projects",
       url: projectsPath,
       icon: <FolderIcon />,
+    },
+    {
+      title: "Kanban",
+      url: "/dashboard/kanban",
+      icon: <KanbanSquare />,
     },
     {
       title: "Messages",
@@ -162,7 +167,7 @@ export function AppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:p-2! h-auto"
             >
-              <a href="/dashboard" className="flex items-center gap-3">
+              <a href="/" className="flex items-center gap-3">
                 <img
                   src="/logo2 copy.png"
                   alt="Cyberspace Works"

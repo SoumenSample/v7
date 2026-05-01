@@ -25,9 +25,9 @@ export function CalendarSidebar({
   return (
     <div className={`flex flex-col h-full bg-background text-foreground ${className}`}>
       {/* Add New Event Button */}
-      <div className="p-6 border-b bg-background text-foreground">
+      <div className="border-b border-border/60 bg-background p-6 text-foreground dark:border-white/15">
         <Button 
-          className="w-full cursor-pointer text-foreground text-white dark:bg-transparent dark:border-gray-200"
+          className="w-full cursor-pointer bg-foreground text-background hover:bg-foreground/90 dark:border-border dark:bg-transparent dark:text-foreground dark:hover:bg-accent"
           onClick={onNewEvent}
         >
           <Plus className="w-4 h-4 mr-2" />

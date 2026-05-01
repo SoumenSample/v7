@@ -391,7 +391,7 @@ export function CalendarMain({ events, eventDates = [], onDeleteEvent, currentUs
   }
 
   return (
-    <div className="w-full flex border rounded-lg bg-background text-foreground relative overflow-x-hidden">
+    <div className="relative w-full overflow-x-hidden rounded-lg border border-border/70 bg-background text-foreground dark:border-white/15">
       <div className="flex min-h-200 w-full">
         {/* Desktop Sidebar */}
         {/* <div className="hidden xl:block w-80 flex-shrink-0">
@@ -401,7 +401,7 @@ export function CalendarMain({ events, eventDates = [], onDeleteEvent, currentUs
         {/* Main Calendar Panel */}
         <div className="flex-1 min-w-0">
           {/* Calendar Toolbar */}
-          <div className="border-b bg-background text-foreground px-4 py-3">
+          <div className="border-b border-border/60 bg-background px-4 py-3 text-foreground dark:border-white/15">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 {/* Mobile Menu Button */}
