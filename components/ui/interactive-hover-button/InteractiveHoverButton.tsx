@@ -72,9 +72,9 @@ export default function InteractiveHoverButton({
     <button
       ref={buttonRef}
       className={cn(
-        "group relative overflow-hidden rounded-full border border-white bg-black px-6 py-3 font-semibold text-white transition-all duration-300",
+        "group relative overflow-hidden border border-white bg-black px-6 py-3 font-semibold text-white transition-all duration-300",
         "hover:bg-white hover:text-black",
-        className
+        className="rounded-[10px]"
       )}
     >
       {/* Default text */}

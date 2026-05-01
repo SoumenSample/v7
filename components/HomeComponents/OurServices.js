@@ -513,10 +513,10 @@ export default function OurServicesWithWires() {
     >
       <Pattern />
 
-      <SpotlightCard
+      {/* <SpotlightCard
         className="absolute top-20 left-0 md:left-60 md:-top-20 pointer-events-none"
         fill="#06B6D4"
-      />
+      /> */}
 
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "radial-gradient(ellipse 65% 50% at 50% 50%,rgba(6,182,212,0.07) 0%,transparent 65%)"

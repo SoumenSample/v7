@@ -81,13 +81,13 @@ function updateStars() {
   });
 }
 
-      // function animate() {
-      //   drawStars();
-      //   updateStars();
-      //   requestAnimationFrame(animate);
-      // }
+      function animate() {
+        drawStars();
+        updateStars();
+        requestAnimationFrame(animate);
+      }
 
-      // animate();
+      animate();
 
       const handleResize = () => {
         canvas.width = window.innerWidth;
