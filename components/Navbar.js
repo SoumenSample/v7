@@ -1161,13 +1161,13 @@ export default function Navbar() {
             {isActive("/about-us") && <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-cyan-400 rounded-full"></span>}
           </Link>
 
-          {/* Marketplace */}
+          {/* Marketplace
           <Link href="/dashboard/marketplace" className="flex flex-col items-center relative group">
             <FaShoppingBag className={`w-6 h-6 transition-colors duration-300 ${isActive("/dashboard/marketplace") ? "text-cyan-400" : "text-cyan-100 group-hover:text-cyan-400"}`} />
             <span className={`text-xs mt-1 transition-colors duration-300 ${isActive("/dashboard/marketplace") ? "text-cyan-400" : "text-gray-100 group-hover:text-cyan-400"}`}>Market</span>
             {!isActive("/dashboard/marketplace") && <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-cyan-700 via-cyan-400 to-cyan-200 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center rounded-full"></span>}
             {isActive("/dashboard/marketplace") && <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-cyan-400 rounded-full"></span>}
-          </Link>
+          </Link> */}
 
           {/* Contact */}
           <Link href="/contact-us" className="flex flex-col items-center relative group">

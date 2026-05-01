@@ -1,9 +1,15 @@
 "use client"
 
 import React, { forwardRef, useRef } from "react"
-
+import {
+  FaLaptopCode, FaMobileAlt, FaCode,
+  FaPalette, FaBullhorn, FaBrush, FaBrain,
+} from "react-icons/fa";
+import { SiGoogleanalytics } from "react-icons/si";
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
+import { Contact } from "lucide-react";
+import { size } from "zod";
 
 const Circle = forwardRef<
   HTMLDivElement,
@@ -13,7 +19,7 @@ const Circle = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "border-border z-10 flex size-12 items-center justify-center rounded-full border-2 bg-white p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+        "border-border z-10 flex size-10 items-center justify-center rounded-full border-2 bg-white p-2 text-black/80 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
         className
       )}
     >
@@ -34,44 +40,48 @@ export default function AnimatedBeamMultipleOutputDemo({
   const div2Ref = useRef<HTMLDivElement>(null)
   const div3Ref = useRef<HTMLDivElement>(null)
   const div4Ref = useRef<HTMLDivElement>(null)
-  const div5Ref = useRef<HTMLDivElement>(null)
+  // const div5Ref = useRef<HTMLDivElement>(null)
   const div6Ref = useRef<HTMLDivElement>(null)
   const div7Ref = useRef<HTMLDivElement>(null)
+  // const div8Ref = useRef<HTMLDivElement>(null)
+  // const div9Ref = useRef<HTMLDivElement>(null)
 
   return (
     <div
       className={cn(
-        "relative flex h-[500px] w-full items-center justify-center overflow-hidden p-10",
+        "absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden p-8",
         className
       )}
       ref={containerRef}
     >
-      <div className="flex size-full max-w-lg flex-row items-stretch justify-between gap-10">
-        <div className="flex flex-col justify-center gap-2">
+      <div className="flex size-full flex-row items-center justify-between gap-10">
+        <div className="flex flex-col justify-center gap-2 py-6">
           <Circle ref={div1Ref}>
-            <Icons.googleDrive />
+            <FaBrain className="text-cyan-400" />
           </Circle>
           <Circle ref={div2Ref}>
-            <Icons.googleDocs />
+            <FaMobileAlt className="text-cyan-400"  />
           </Circle>
           <Circle ref={div3Ref}>
-            <Icons.whatsapp />
+            <FaLaptopCode className="text-cyan-400"  />
           </Circle>
           <Circle ref={div4Ref}>
-            <Icons.messenger />
+            <FaPalette className="text-cyan-400" />
           </Circle>
-          <Circle ref={div5Ref}>
-            <Icons.notion />
-          </Circle>
+       
         </div>
         <div className="flex flex-col justify-center">
           <Circle ref={div6Ref} className="size-16">
-            <Icons.openai />
+            <img
+              src="/logo2%20copy.png"
+              alt="Logo"
+              className="h-8 w-8"
+            />
           </Circle>
         </div>
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center text-cyan-400">
           <Circle ref={div7Ref}>
-            <Icons.user />
+            <Contact className="text-cyan-400" />
           </Circle>
         </div>
       </div>
@@ -96,11 +106,21 @@ export default function AnimatedBeamMultipleOutputDemo({
         fromRef={div4Ref}
         toRef={div6Ref}
       />
-      <AnimatedBeam
+      {/* <AnimatedBeam
         containerRef={containerRef}
         fromRef={div5Ref}
         toRef={div6Ref}
+      /> */}
+      {/* <AnimatedBeam
+        containerRef={containerRef}
+        fromRef={div8Ref}
+        toRef={div6Ref}
       />
+      <AnimatedBeam
+        containerRef={containerRef}
+        fromRef={div9Ref}
+        toRef={div6Ref}
+      /> */}
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={div6Ref}

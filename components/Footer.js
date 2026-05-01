@@ -449,7 +449,7 @@ const Footer = () => {
                                 <li>
                                   <Link
                                     href="/dashboard"
-                                    className=" gap-1 text-black  rounded-full  transition-all duration-300 hover:shadow-[0_0_16px_rgba(0,0,0,0.6)]"
+                                    className=" relative hover:text-slate-700 transition duration-200 after:absolute after:left-0 after:-bottom-0.5 after:w-0 after:h-[2px] after:bg-slate-700 after:transition-all after:duration-300 hover:after:w-full"
                                   >
                                     Client Portal
                                   </Link>
@@ -468,7 +468,7 @@ const Footer = () => {
                               <li>
                                 <Link
                                   href="/login"
-                                  className=" gap-1  text-black  rounded-full  transition-all duration-300 hover:shadow-[0_0_16px_rgba(0,0,0,0.6)]"
+                                  className=" relative hover:text-slate-700 transition duration-200 after:absolute after:left-0 after:-bottom-0.5 after:w-0 after:h-[2px] after:bg-slate-700 after:transition-all after:duration-300 hover:after:w-full"
                                 >
                                   Login
                                 </Link>
