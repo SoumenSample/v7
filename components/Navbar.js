@@ -947,6 +947,7 @@ export default function Navbar() {
   ]}
   color="#00BCD4"
   textColor="white"
+  onQuickEnquiry={openQuoteModal}
 />
             </ul>
 

@@ -965,11 +965,15 @@ type NavItem = {
 interface SparkleNavbarProps {
   items: NavItem[];
   color?: string;
+  textColor?: string;
+  onQuickEnquiry?: () => void;
 }
 
 const SparkleNavbar: React.FC<SparkleNavbarProps> = ({
   items,
   color = "#00fffc",
+  textColor = "white",
+  onQuickEnquiry,
 }) => {
   const getInitialIndex = () => {
     if (typeof window === "undefined") return 0;
@@ -1470,7 +1474,11 @@ const SparkleNavbar: React.FC<SparkleNavbarProps> = ({
           <div style={{ marginLeft: "20px" }}>
             <HoverBorderGradient 
               onClick={() => {
-                console.log("Quick enquiry clicked");
+                if (typeof onQuickEnquiry === "function") {
+                  onQuickEnquiry();
+                } else {
+                  console.log("Quick enquiry clicked (no handler)");
+                }
               }}
               style={{
                 background: "transparent",
@@ -1479,7 +1487,7 @@ const SparkleNavbar: React.FC<SparkleNavbarProps> = ({
                 justifyContent: "center",
                 gap: "6px",
                 border: "none",
-                color: "#00fffc",
+                color: textColor,
                 fontWeight: "600",
               }}
             >
