@@ -215,7 +215,7 @@ export default function BillingWorkspace({ mode = "client" }) {
 
     try {
       const [billingResponse, clientsResponse] = await Promise.all([
-        fetch("/api/billing", { cache: "no-store" }),
+        fetch("/api/billing", { cache: "no-store", credentials: "include" }),
         canManage ? fetch("/api/users/list", { cache: "no-store", credentials: "include" }) : Promise.resolve(null),
       ]);
 
@@ -388,6 +388,7 @@ export default function BillingWorkspace({ mode = "client" }) {
       const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         body: fileData,
+        credentials: "include",
       });
 
       const uploadResult = await readJsonSafe(uploadResponse);
@@ -414,6 +415,7 @@ export default function BillingWorkspace({ mode = "client" }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       const data = await readJsonSafe(response);
@@ -467,6 +469,7 @@ export default function BillingWorkspace({ mode = "client" }) {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -514,7 +517,7 @@ export default function BillingWorkspace({ mode = "client" }) {
     setNotice("");
 
     try {
-      const response = await fetch(`/api/billing/${billId}`, { method: "DELETE" });
+      const response = await fetch(`/api/billing/${billId}`, { method: "DELETE", credentials: "include" });
       const data = await response.json();
 
       if (!response.ok) {
@@ -683,20 +686,46 @@ export default function BillingWorkspace({ mode = "client" }) {
         ? "png"
         : "file";
 
-    const anchor = document.createElement("a");
-    anchor.href = record.fileUrl;
-    anchor.download = record.fileName || `${safeFallbackReference || "billing-document"}.${extension}`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
+    fetch(record.fileUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to download the uploaded file.");
+        }
+
+        return response.blob();
+      })
+      .then((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = record.fileName || `${safeFallbackReference || "billing-document"}.${extension}`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(objectUrl);
+      })
+      .catch(() => {
+        window.open(record.fileUrl, "_blank", "noopener,noreferrer");
+      });
+  }
+
+  function viewUploadedFile(record) {
+    if (!record?.fileUrl) {
+      setError("No uploaded file found for this record.");
+      return;
+    }
+
+    window.open(record.fileUrl, "_blank", "noopener,noreferrer");
   }
 
   const templatePreview = livePreview;
   const previewBill = canManage && adminMode === "upload" ? selectedBill : templatePreview;
   const isUploadedPreview = previewBill?.sourceType === "uploaded" && Boolean(previewBill?.fileUrl);
+  const uploadedBills = useMemo(() => bills.filter((bill) => isUploadedRecord(bill)), [bills]);
+  const templateBills = useMemo(() => bills.filter((bill) => !isUploadedRecord(bill)), [bills]);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
+    <div className="grid gap-4">
       <div className="space-y-4">
         {canManage ? (
           <Card>
@@ -1050,32 +1079,75 @@ export default function BillingWorkspace({ mode = "client" }) {
               ) : bills.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No bills or invoices have been created yet.</p>
               ) : (
-                <div className="space-y-3">
-                  {bills.map((bill) => (
-                    <div key={bill._id} className={`cursor-pointer rounded-lg border p-3 ${selectedId === bill._id ? "border-border bg-muted/40 dark:border-white/20 dark:bg-white/5" : "border-border/70 bg-background hover:bg-muted/40 dark:border-white/10 dark:hover:bg-white/5"}`}>
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <button type="button" className="text-left" onClick={() => setSelectedId(bill._id)}>
-                          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{bill.type} {isUploadedRecord(bill) ? "- uploaded" : "- template"}</p>
-                          <p className="text-lg font-semibold text-foreground">{bill.referenceNumber}</p>
-                          <p className="text-sm text-muted-foreground">{bill.recipientName}</p>
-                        </button>
+                <div className="space-y-5">
+                  {uploadedBills.length > 0 ? (
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Uploaded Documents</p>
+                        <p className="text-sm text-muted-foreground">Files uploaded through billing show here with download access.</p>
+                      </div>
+                      <div className="space-y-3">
+                        {uploadedBills.map((bill) => (
+                          <div key={bill._id} className={`cursor-pointer rounded-lg border p-3 ${selectedId === bill._id ? "border-border bg-muted/40 dark:border-white/20 dark:bg-white/5" : "border-border/70 bg-background hover:bg-muted/40 dark:border-white/10 dark:hover:bg-white/5"}`}>
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <button type="button" className="text-left" onClick={() => setSelectedId(bill._id)}>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{bill.type} - uploaded</p>
+                                <p className="text-lg font-semibold text-foreground">{bill.referenceNumber}</p>
+                                <p className="text-sm text-muted-foreground">{bill.recipientName}</p>
+                                <p className="mt-1 text-xs text-muted-foreground">{bill.fileName || bill.documentTitle || "Uploaded file"}</p>
+                              </button>
 
-                        <div className="flex flex-wrap gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => loadBillIntoForm(bill)}
-                            disabled={isUploadedRecord(bill)}
-                          >
-                            Load Into Form
-                          </Button>
-                          <Button type="button" variant="destructive" onClick={() => deleteBill(bill._id)} disabled={saving}>
-                            Delete
-                          </Button>
-                        </div>
+                              <div className="flex flex-wrap gap-2">
+                                {/* <Button type="button" variant="outline" onClick={() => setSelectedId(bill._id)}>
+                                  View
+                                </Button> */}
+                                <Button type="button" variant="outline" onClick={() => viewUploadedFile(bill)}>
+                                  Open File
+                                </Button>
+                                <Button type="button" variant="outline" onClick={() => downloadUploadedFile(bill)}>
+                                  Download
+                                </Button>
+                                <Button type="button" variant="destructive" onClick={() => deleteBill(bill._id)} disabled={saving}>
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
+                  ) : null}
+
+                  {templateBills.length > 0 ? (
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Template Documents</p>
+                        <p className="text-sm text-muted-foreground">Bills and invoices created from the editor.</p>
+                      </div>
+                      <div className="space-y-3">
+                        {templateBills.map((bill) => (
+                          <div key={bill._id} className={`cursor-pointer rounded-lg border p-3 ${selectedId === bill._id ? "border-border bg-muted/40 dark:border-white/20 dark:bg-white/5" : "border-border/70 bg-background hover:bg-muted/40 dark:border-white/10 dark:hover:bg-white/5"}`}>
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <button type="button" className="text-left" onClick={() => setSelectedId(bill._id)}>
+                                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{bill.type} - template</p>
+                                <p className="text-lg font-semibold text-foreground">{bill.referenceNumber}</p>
+                                <p className="text-sm text-muted-foreground">{bill.recipientName}</p>
+                              </button>
+
+                              <div className="flex flex-wrap gap-2">
+                                <Button type="button" variant="outline" onClick={() => loadBillIntoForm(bill)}>
+                                  Load Into Form
+                                </Button>
+                                <Button type="button" variant="destructive" onClick={() => deleteBill(bill._id)} disabled={saving}>
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </CardContent>
@@ -1083,99 +1155,7 @@ export default function BillingWorkspace({ mode = "client" }) {
         ) : null}
       </div>
 
-      <div className="space-y-4">
-        {canManage ? (
-          <Card>
-            <CardHeader>
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <CardTitle className="text-foreground">{adminMode === "upload" ? "Upload & Assign" : "Live Template Preview"}</CardTitle>
-                  <CardDescription>
-                    {adminMode === "upload"
-                      ? "Upload the original file and assign it to a client."
-                      : "What the issued bill or invoice will look like."}
-                  </CardDescription>
-                </div>
-                {adminMode === "upload" && isUploadedPreview ? (
-                  <Button type="button" variant="outline" onClick={() => downloadUploadedFile(previewBill)}>
-                    Download Uploaded File
-                  </Button>
-                ) : (
-                  <>
-                    <Button type="button" variant="outline" onClick={downloadPreviewAsPdf} disabled={exporting || exportingImage}>
-                      {exporting ? "Preparing PDF..." : "Download PDF"}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={downloadPreviewAsImage} disabled={exporting || exportingImage}>
-                      {exportingImage ? "Preparing Image..." : "Download PNG"}
-                    </Button>
-                  </>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {notice ? <p className="mb-3 text-sm text-emerald-400">{notice}</p> : null}
-              {error ? <p className="mb-3 text-sm text-red-400">{error}</p> : null}
-              {adminMode === "upload" ? (
-                <p className="text-sm text-muted-foreground">
-                  Upload the file once, then assign it. The original file is stored and downloaded without conversion.
-                </p>
-              ) : (
-                <div ref={printableRef} className="billing-print-root">
-                  <BillingDocument bill={previewBill} className="scale-[0.98]" />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardHeader>
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <CardTitle className="text-foreground">Document Preview</CardTitle>
-                  <CardDescription>Read-only access to your own issued bills and invoices.</CardDescription>
-                </div>
-                {isUploadedRecord(selectedBill) ? (
-                  <Button type="button" variant="outline" onClick={() => downloadUploadedFile(selectedBill)} disabled={!selectedBill}>
-                    Download Uploaded File
-                  </Button>
-                ) : (
-                  <>
-                    <Button type="button" variant="outline" onClick={downloadPreviewAsPdf} disabled={!selectedBill || exporting || exportingImage}>
-                      {exporting ? "Preparing PDF..." : "Download PDF"}
-                    </Button>
-                    <Button type="button" variant="outline" onClick={downloadPreviewAsImage} disabled={!selectedBill || exporting || exportingImage}>
-                      {exportingImage ? "Preparing Image..." : "Download PNG"}
-                    </Button>
-                  </>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              {notice ? <p className="mb-3 text-sm text-emerald-600">{notice}</p> : null}
-              {error ? <p className="mb-3 text-sm text-rose-600">{error}</p> : null}
-              {selectedBill ? (
-                isUploadedRecord(selectedBill) ? (
-                  <div className="rounded-lg border border-border bg-background p-3 dark:border-white/15 dark:bg-background">
-                    {isImageMimeType(selectedBill.fileMimeType) ? (
-                      <img src={selectedBill.fileUrl} alt={selectedBill.fileName || "Uploaded billing file"} className="w-full rounded-md" />
-                    ) : isPdfMimeType(selectedBill.fileMimeType) ? (
-                      <iframe title="Uploaded billing PDF" src={selectedBill.fileUrl} className="h-180 w-full rounded-md border border-border bg-background dark:border-white/15 dark:bg-background" />
-                    ) : (
-                      <p className="text-sm text-muted-foreground">Preview is not available for this file type. Use Download Uploaded File.</p>
-                    )}
-                  </div>
-                ) : (
-                  <div ref={printableRef} className="billing-print-root">
-                    <BillingDocument bill={selectedBill} className="scale-[0.98]" />
-                  </div>
-                )
-              ) : (
-                <p className="text-sm text-muted-foreground">Select a document to preview it here.</p>
-              )}
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      
 
     </div>
   );

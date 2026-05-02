@@ -32,14 +32,16 @@ export async function POST(req) {
     const sanitizedName = String(file.name || "document")
       .trim()
       .replace(/[^a-zA-Z0-9._-]+/g, "-");
-    const name = `${Date.now()}_${sanitizedName}`;
+    const baseName = sanitizedName.replace(/\.[^.]+$/, "");
+    const isPdf = String(file.type || "").toLowerCase() === "application/pdf" || sanitizedName.toLowerCase().endsWith(".pdf");
+    const resourceType = isPdf ? "raw" : "image";
+    const publicId = `uploads/${Date.now()}_${baseName || "document"}`;
 
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
-          resource_type: "auto",
-          public_id: name,
-          folder: "uploads",
+          resource_type: resourceType,
+          public_id: publicId,
         },
         (error, result) => {
           if (error) reject(error);
@@ -49,7 +51,12 @@ export async function POST(req) {
       stream.end(buffer);
     });
 
-    return Response.json({ url: result.secure_url });
+    return Response.json({
+      url: result.secure_url,
+      publicId: result.public_id,
+      resourceType: result.resource_type,
+      format: result.format,
+    });
   } catch (error) {
     console.error("Upload error:", error);
     return Response.json({ error: error?.message || "Upload failed" }, { status: 500 });
