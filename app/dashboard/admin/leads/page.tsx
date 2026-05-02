@@ -240,8 +240,8 @@ export default function UsersPage() {
   }
 
   // ─── Shared field styles ────────────────────────────────────────────
-  const inputCls = "h-10 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all text-sm"
-  const labelCls = "text-xs font-semibold text-gray-500 uppercase tracking-wide"
+  const inputCls = "h-10 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-600"
+  const labelCls = "text-xs font-semibold text-gray-500 uppercase tracking-wide dark:text-zinc-300"
 
   return (
     <div className="flex flex-col gap-4">
@@ -257,25 +257,25 @@ export default function UsersPage() {
             <DialogTrigger asChild>
               <Button
                 onClick={() => setOpen(true)}
-                className="bg-black text-white hover:bg-gray-800 rounded-lg px-5 h-10 font-semibold text-sm shadow-sm transition-all"
+                className="bg-black text-white hover:bg-gray-800 rounded-lg px-5 h-10 font-semibold text-sm shadow-sm transition-all dark:bg-zinc-800 dark:hover:bg-zinc-700/20 dark:text-zinc-100"
               >
                 + Add Lead
               </Button>
             </DialogTrigger>
           </div>
 
-          <DialogContent className="max-w-2xl w-full p-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl [&::-webkit-scrollbar]:hidden">
+          <DialogContent className="max-w-2xl w-full p-0 overflow-hidden rounded-2xl border border-border bg-popover shadow-2xl dark:border-zinc-700 dark:bg-popover [&::-webkit-scrollbar]:hidden">
             <DialogHeader className="sr-only">
               <DialogTitle>Add Lead</DialogTitle>
             </DialogHeader>
 
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-7 pt-6 pb-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-7 pt-6 pb-4 border-b border-gray-100 dark:border-zinc-700">
               <div>
-                <h2 className="text-base font-bold text-gray-900">Add New Lead</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Fill in the details below to capture a new lead</p>
+                <h2 className="text-base font-bold text-foreground">Add New Lead</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Fill in the details below to capture a new lead</p>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:border-emerald-400/30 dark:text-emerald-300">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
                 New Lead
               </span>
@@ -320,7 +320,7 @@ export default function UsersPage() {
                     {serviceListPreview.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {serviceListPreview.map((s, i) => (
-                          <span key={i} className="inline-flex items-center gap-1 rounded-md bg-gray-100 border border-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                          <span key={i} className="inline-flex items-center gap-1 rounded-md bg-gray-100 border border-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
                             {s}
                           </span>
@@ -335,7 +335,7 @@ export default function UsersPage() {
                       value={formData.status ?? "active"}
                       onChange={onFieldChange}
                       required
-                      className="w-full h-10 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm px-3 appearance-none focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all cursor-pointer"
+                      className="w-full h-10 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm px-3 appearance-none focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all cursor-pointer dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                     >
                       {leadStatusOptions.map((option) => (
                         <option key={option.value} value={option.value}>{option.label}</option>
@@ -372,7 +372,7 @@ export default function UsersPage() {
                     onChange={onFieldChange}
                     rows={3}
                     placeholder="Describe the lead's project needs, goals, or any relevant details..."
-                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                   />
                 </div>
 
@@ -400,14 +400,14 @@ export default function UsersPage() {
                     type="button"
                     variant="outline"
                     onClick={() => setOpen(false)}
-                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium transition-all"
+                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 font-medium transition-all dark:border-zinc-700 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-zinc-700/20"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-2 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50"
+                    className="flex-2 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700/20 dark:text-zinc-100"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
@@ -433,14 +433,14 @@ export default function UsersPage() {
         </Dialog>
 
         {/* ── Leads Table ── */}
-        <Card className="overflow-hidden rounded-2xl border border-border/70 shadow-sm dark:border-white/15">
-          <CardHeader className="border-b border-border/70 px-6 py-5 dark:border-white/15">
+        <Card className="overflow-hidden rounded-2xl border border-border/70 shadow-sm dark:border-zinc-700">
+          <CardHeader className="border-b border-border/70 px-6 py-5 dark:border-zinc-700">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base font-bold text-foreground">Leads</CardTitle>
                 <CardDescription className="mt-0.5 text-sm text-muted-foreground">All captured leads in your pipeline</CardDescription>
               </div>
-              <span className="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
+              <span className="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                 {leads.length} total
               </span>
             </div>
@@ -456,7 +456,7 @@ export default function UsersPage() {
               </div>
             ) : leads.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted dark:bg-white/10">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted dark:bg-zinc-800">
                   <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                   </svg>
@@ -468,7 +468,7 @@ export default function UsersPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-border/70 bg-muted/40 dark:border-white/15 dark:bg-white/5">
+                    <tr className="border-b border-border/70 bg-muted/40 dark:border-zinc-700 dark:bg-zinc-900/10">
                       <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</th>
                       <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact</th>
                       <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Services</th>
@@ -480,7 +480,7 @@ export default function UsersPage() {
                   </thead>
                   <tbody className="divide-y divide-border/70 dark:divide-white/15">
                     {leads.map((lead) => (
-                      <tr key={lead._id} className="align-top transition-colors hover:bg-muted/30 dark:hover:bg-white/5">
+                      <tr key={lead._id} className="align-top transition-colors hover:bg-muted/30 dark:hover:bg-zinc-700/10">
                         <td className="px-6 py-4">
                           <p className="text-sm font-semibold text-foreground">{lead.name}</p>
                           <p className="mt-0.5 text-xs text-muted-foreground">{lead.budget ? `₹${lead.budget}` : "No budget"}</p>
@@ -497,7 +497,7 @@ export default function UsersPage() {
                         <td className="px-4 py-4 max-w-45">
                           <div className="flex flex-wrap gap-1">
                             {(lead.services || []).map((s, i) => (
-                              <span key={i} className="inline-flex rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
+                              <span key={i} className="inline-flex rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                                 {s}
                               </span>
                             ))}
@@ -507,7 +507,7 @@ export default function UsersPage() {
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="inline-flex rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground dark:border-white/15 dark:bg-white/10 dark:text-slate-200">
+                          <span className="inline-flex rounded-full border border-border bg-muted px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100">
                             {lead.source}
                           </span>
                         </td>
@@ -528,12 +528,12 @@ export default function UsersPage() {
                         <td className="px-4 py-4">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-white/10">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-zinc-700/10">
                                 <MoreVertical className="size-4" />
                                 <span className="sr-only">Open actions</span>
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl border border-border bg-popover p-1 shadow-lg dark:border-white/15">
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl border border-border bg-popover p-1 shadow-lg dark:border-zinc-700">
                               <DropdownMenuItem className="cursor-pointer rounded-lg px-3 py-2 text-sm text-popover-foreground hover:bg-muted" onClick={() => openEditModal(lead)}>
                                 Edit lead
                               </DropdownMenuItem>
@@ -568,16 +568,16 @@ export default function UsersPage() {
         {/* ── Convert to Client Modal ── */}
         {showConvertModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden">
+            <div className="w-full max-w-md bg-popover rounded-2xl border border-border shadow-2xl overflow-hidden dark:border-zinc-700 dark:bg-popover">
               {/* Header */}
-              <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+              <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-zinc-700">
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Convert Lead to Client</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">Create a user account and set project details</p>
+                  <h3 className="text-base font-bold text-foreground">Convert Lead to Client</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Create a user account and set project details</p>
                 </div>
                 <button
                   onClick={() => { setShowConvertModal(null); setError("") }}
-                  className="text-gray-400 hover:text-gray-700 transition-colors rounded-lg p-1 hover:bg-gray-100"
+                  className="text-gray-400 hover:text-gray-700 transition-colors rounded-lg p-1 hover:bg-gray-100 dark:text-zinc-300 dark:hover:text-zinc-100 dark:hover:bg-zinc-700/10"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -646,7 +646,7 @@ export default function UsersPage() {
                     value={convertDates[showConvertModal]?.projectDescription || ""}
                     onChange={(e) => setConvertDates({ ...convertDates, [showConvertModal]: { ...convertDates[showConvertModal], projectDescription: e.target.value } })}
                     rows={3}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                   />
                 </div>
 
@@ -662,14 +662,14 @@ export default function UsersPage() {
                 <div className="flex gap-3 pt-1">
                   <Button
                     variant="outline"
-                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-medium"
+                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-medium dark:border-zinc-700 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-zinc-700/10"
                     onClick={() => { setShowConvertModal(null); setError("") }}
                     disabled={convertingLeadId === showConvertModal}
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="flex-1 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50"
+                    className="flex-1 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700/20 dark:text-zinc-100"
                     onClick={() => handleConvertToClient(showConvertModal)}
                     disabled={convertingLeadId === showConvertModal}
                   >
@@ -692,16 +692,16 @@ export default function UsersPage() {
         {/* ── Edit Lead Modal ── */}
         {editingLead && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden">
+            <div className="w-full max-w-md bg-popover rounded-2xl border border-border shadow-2xl overflow-hidden dark:border-zinc-700 dark:bg-popover">
               {/* Header */}
-              <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100">
+              <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-zinc-700">
                 <div>
-                  <h3 className="text-base font-bold text-gray-900">Edit Lead</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">Update the details for this lead</p>
+                  <h3 className="text-base font-bold text-foreground">Edit Lead</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Update the details for this lead</p>
                 </div>
                 <button
                   onClick={() => { setEditingLead(null); setEditError("") }}
-                  className="text-gray-400 hover:text-gray-700 transition-colors rounded-lg p-1 hover:bg-gray-100"
+                  className="text-gray-400 hover:text-gray-700 transition-colors rounded-lg p-1 hover:bg-gray-100 dark:text-zinc-300 dark:hover:text-zinc-100 dark:hover:bg-zinc-700/10"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -742,7 +742,7 @@ export default function UsersPage() {
                     value={editForm.status}
                     onChange={onEditFieldChange}
                     required
-                      className="w-full h-10 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm px-3 appearance-none focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all cursor-pointer"
+                      className="w-full h-10 rounded-lg border border-gray-200 bg-white text-gray-900 text-sm px-3 appearance-none focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all cursor-pointer dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
                   >
                     {leadStatusOptions.map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -757,7 +757,7 @@ export default function UsersPage() {
                     value={editForm.requirement}
                     onChange={onEditFieldChange}
                     rows={4}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-border/60 focus:border-gray-400 transition-all resize-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                     placeholder="Optional details"
                   />
                 </div>
@@ -774,14 +774,14 @@ export default function UsersPage() {
                 <div className="flex gap-3 pt-1">
                   <Button
                     variant="outline"
-                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-medium"
+                    className="flex-1 h-10 rounded-lg border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-medium dark:border-zinc-700 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-zinc-700/10"
                     onClick={() => { setEditingLead(null); setEditError("") }}
                     disabled={isUpdatingLead}
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="flex-1 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50"
+                    className="flex-1 h-10 rounded-lg bg-black hover:bg-gray-800 text-white font-semibold transition-all shadow-sm disabled:opacity-50 dark:bg-zinc-800 dark:hover:bg-zinc-700/20 dark:text-zinc-100"
                     onClick={handleUpdateLead}
                     disabled={isUpdatingLead}
                   >
