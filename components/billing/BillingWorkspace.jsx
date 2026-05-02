@@ -705,11 +705,11 @@ export default function BillingWorkspace({ mode = "client" }) {
               <CardDescription>Create a bill/invoice template or upload an existing file and assign it to a client.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mb-5 flex flex-wrap gap-2">
+              {/* <div className="mb-5 flex flex-wrap gap-2">
                 <Button type="button" variant={adminMode === "upload" ? "default" : "outline"} onClick={() => setAdminMode("upload")}>
                   Upload & Assign
                 </Button>
-              </div>
+              </div> */}
 
               {adminMode === "template" ? (
                 <form onSubmit={handleSubmit} className="space-y-5">
