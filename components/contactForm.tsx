@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
 export default function ContractForm({ open, setOpen, onSuccess }) {
@@ -32,6 +32,21 @@ export default function ContractForm({ open, setOpen, onSuccess }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
+
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100 dark:border-white/10">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-100 dark:bg-white/10 flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+              className="text-gray-600 dark:text-gray-300">
+              <path d="M3 7h18" />
+              <path d="M3 12h18" />
+              <path d="M3 17h18" />
+            </svg>
+          </div>
+          <div>
+            <DialogTitle className="text-sm font-bold text-gray-900 dark:text-white">New Contract</DialogTitle>
+            <DialogDescription className="text-xs text-gray-400 dark:text-gray-500">Fill in contract details and save</DialogDescription>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
 

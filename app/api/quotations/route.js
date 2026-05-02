@@ -9,9 +9,9 @@ import User from "@/lib/models/User"
 import { emitToUsers } from "@/lib/socket/server"
 
 async function connectDB() {
+  // Use the shared helper which handles caching and missing env checks
   try {
-    if (mongoose.connection.readyState === 1) return
-    await mongoose.connect(process.env.MONGODB_URI)
+    await connectToDatabase()
   } catch (err) {
     console.error("DB ERROR:", err)
     throw err
@@ -45,6 +45,10 @@ export async function POST(req) {
     const title = formData.get("title")
     const description = formData.get("description")
     const file = formData.get("file")
+
+    if (!title || String(title).trim() === "") {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 })
+    }
 
     let fileUrl = ""
 
