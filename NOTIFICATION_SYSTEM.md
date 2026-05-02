@@ -60,6 +60,7 @@ notify.warning(title, message, autoClose);
 ### Auto-Close
 - Notifications auto-close after 5 seconds by default
 - Set `autoClose: false` to keep them visible indefinitely
+- Notifications are stored in `localStorage`, so read/unread state and persistent notifications survive refreshes
 
 ### Unread Tracking
 - New notifications are marked as unread
@@ -209,7 +210,6 @@ app/
 Potential additions:
 - Sound notifications
 - Desktop notifications
-- Notification persistence (localStorage)
 - Notification history/archive
 - Notification categories/filtering
 - Custom notification templates
