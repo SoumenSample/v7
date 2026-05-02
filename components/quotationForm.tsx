@@ -79,7 +79,7 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 export default function QuotationForm({ open, setOpen, onSuccess }) {
   const [form, setForm] = useState({ title: "", description: "" })
@@ -134,8 +134,8 @@ export default function QuotationForm({ open, setOpen, onSuccess }) {
             </svg>
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white">New Quotation</h3>
-            <p className="text-xs text-gray-400 dark:text-gray-500">Fill in the details and attach a document</p>
+            <DialogTitle className="text-sm font-bold text-gray-900 dark:text-white">New Quotation</DialogTitle>
+            <DialogDescription className="text-xs text-gray-400 dark:text-gray-500">Fill in the details and attach a document</DialogDescription>
           </div>
         </div>
 
