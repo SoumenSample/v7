@@ -77,24 +77,91 @@ import QuotationForm from "@/components/quotationForm"
 
 export default function QuotationPage() {
   const [data, setData] = useState([])
+  const [clients, setClients] = useState([])
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [editingData, setEditingData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState(false)
 
   const loadData = async () => {
     try {
-      const res = await fetch("/api/quotations")
-      const text = await res.text()
+      setLoading(true)
+      const [quotRes, clientRes] = await Promise.all([
+        fetch("/api/quotations"),
+        fetch("/api/users/list")
+      ])
+
+      const quotText = await quotRes.text()
+      const clientText = await clientRes.text()
+
       try {
-        const json = JSON.parse(text)
-        setData(json.quotations || [])
+        const quotJson = JSON.parse(quotText)
+        setData(quotJson.quotations || [])
       } catch {
-        console.error("Not JSON response:", text)
+        console.error("Failed to parse quotations:", quotText)
+      }
+
+      try {
+        const clientJson = JSON.parse(clientText)
+        // Filter for clients only
+        const clientsList = (clientJson.users || []).filter((u: any) => u.role === "client")
+        setClients(clientsList)
+      } catch {
+        console.error("Failed to parse clients:", clientText)
       }
     } catch (err) {
-      console.error(err)
+      console.error("Error loading data:", err)
+    } finally {
+      setLoading(false)
     }
   }
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const handleEditClick = (quotation: any) => {
+    setEditingId(quotation._id)
+    setEditingData(quotation)
+    setOpen(true)
+  }
+
+  const handleDeleteClick = async (quotationId: string) => {
+    if (!window.confirm("Are you sure you want to delete this quotation?")) {
+      return
+    }
+
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/quotations/${quotationId}`, { method: "DELETE" })
+      const result = await res.json()
+
+      if (!res.ok) {
+        alert(result.error || "Failed to delete quotation")
+        setDeleting(false)
+        return
+      }
+
+      setData((prev) => prev.filter((q) => q._id !== quotationId))
+      alert("Quotation deleted successfully")
+    } catch (err) {
+      alert(err.message || "An error occurred")
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleCloseModal = () => {
+    setOpen(false)
+    setEditingId(null)
+    setEditingData(null)
+  }
+
+  const handleSuccess = () => {
+    handleCloseModal()
+    loadData()
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -107,7 +174,15 @@ export default function QuotationPage() {
             {data.length} quotation{data.length !== 1 ? "s" : ""} found
           </p>
         </div>
-        <Button onClick={() => setOpen(true)}>+ Add Quotation</Button>
+        <Button
+          onClick={() => {
+            setEditingId(null)
+            setEditingData(null)
+            setOpen(true)
+          }}
+        >
+          + Add Quotation
+        </Button>
       </div>
 
       {/* ── Table ── */}
@@ -118,7 +193,7 @@ export default function QuotationPage() {
             {/* Head */}
             <thead>
               <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
-                {["#", "Title", "Description", "Document"].map((col) => (
+                {["#", "Title", "Client", "Description", "Document", "Actions"].map((col) => (
                   <th
                     key={col}
                     className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 whitespace-nowrap"
@@ -131,9 +206,15 @@ export default function QuotationPage() {
 
             {/* Body */}
             <tbody className="divide-y divide-gray-100 dark:divide-white/5 bg-gray-50 dark:bg-white/5">
-              {data.length === 0 ? (
+              {loading ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
+                  <td colSpan={6} className="px-5 py-8 text-center text-gray-400 dark:text-gray-500">
+                    <p className="text-sm">Loading...</p>
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-400 dark:text-gray-500">
                     <div className="flex flex-col items-center gap-2">
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -161,6 +242,14 @@ export default function QuotationPage() {
                     {/* Title */}
                     <td className="px-5 py-4 font-semibold text-gray-900 dark:text-white whitespace-nowrap">
                       {q.title || "—"}
+                    </td>
+
+                    {/* Client */}
+                    <td className="px-5 py-4 text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      {q.recipientUserId?.name || "—"}
+                      {q.recipientUserId?.email && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{q.recipientUserId.email}</div>
+                      )}
                     </td>
 
                     {/* Description */}
@@ -193,6 +282,33 @@ export default function QuotationPage() {
                         <span className="text-xs text-gray-300 dark:text-gray-700 italic">No file</span>
                       )}
                     </td>
+
+                    {/* Actions */}
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditClick(q)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors
+                            border border-gray-200 dark:border-white/10
+                            bg-white dark:bg-white/5
+                            text-gray-700 dark:text-gray-300
+                            hover:bg-gray-100 dark:hover:bg-white/10"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(q._id)}
+                          disabled={deleting}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-60
+                            border border-red-200 dark:border-red-900/30
+                            bg-red-50 dark:bg-red-900/20
+                            text-red-700 dark:text-red-400
+                            hover:bg-red-100 dark:hover:bg-red-900/30"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -208,7 +324,14 @@ export default function QuotationPage() {
         )}
       </div>
 
-      <QuotationForm open={open} setOpen={setOpen} onSuccess={loadData} />
+      <QuotationForm
+        open={open}
+        setOpen={handleCloseModal}
+        onSuccess={handleSuccess}
+        quotationId={editingId}
+        initialData={editingData}
+        clients={clients}
+      />
     </div>
   )
 }

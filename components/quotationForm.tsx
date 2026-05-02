@@ -78,31 +78,91 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
-export default function QuotationForm({ open, setOpen, onSuccess }) {
-  const [form, setForm] = useState({ title: "", description: "" })
+export default function QuotationForm({ open, setOpen, onSuccess, quotationId = null, initialData = null, clients = [] }) {
+  const [form, setForm] = useState({ title: "", description: "", recipientUserId: "" })
   const [file, setFile] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        title: initialData.title || "",
+        description: initialData.description || "",
+        recipientUserId: initialData.recipientUserId?._id || initialData.recipientUserId || "",
+      })
+      setFile(null)
+      setError("")
+    } else {
+      setForm({ title: "", description: "", recipientUserId: "" })
+      setFile(null)
+      setError("")
+    }
+  }, [initialData, open])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
+    setError("")
 
-    const formData = new FormData()
-    formData.append("title", form.title)
-    formData.append("description", form.description)
-    if (file) formData.append("file", file)
+    if (!form.recipientUserId) {
+      setError("Please select a client")
+      setSubmitting(false)
+      return
+    }
 
-    await fetch("/api/quotations", { method: "POST", body: formData })
+    try {
+      let fileUrl = initialData?.fileUrl || ""
+      
+      // Upload file to Cloudinary if new file selected
+      if (file) {
+        const uploadFormData = new FormData()
+        uploadFormData.append("file", file)
+        
+        const uploadRes = await fetch("/api/upload", { method: "POST", body: uploadFormData })
+        const uploadData = await uploadRes.json()
+        
+        if (!uploadRes.ok) {
+          setError(uploadData.error || "Failed to upload file")
+          setSubmitting(false)
+          return
+        }
+        
+        fileUrl = uploadData.url
+      }
+      
+      // Create FormData for quotation with the Cloudinary URL
+      const formData = new FormData()
+      formData.append("title", form.title)
+      formData.append("description", form.description)
+      formData.append("recipientUserId", form.recipientUserId)
+      formData.append("fileUrl", fileUrl)
+      
+      const method = quotationId ? "PUT" : "POST"
+      const url = quotationId ? `/api/quotations/${quotationId}` : "/api/quotations"
+      
+      const res = await fetch(url, { method, body: formData })
+      const data = await res.json()
 
-    setSubmitting(false)
-    setForm({ title: "", description: "" })
-    setFile(null)
-    setOpen(false)
-    onSuccess()
+      if (!res.ok) {
+        setError(data.error || "Failed to save quotation")
+        setSubmitting(false)
+        return
+      }
+
+      setSubmitting(false)
+      setForm({ title: "", description: "", recipientUserId: "" })
+      setFile(null)
+      setOpen(false)
+      onSuccess()
+    } catch (err) {
+      setError(err.message || "An error occurred")
+      setSubmitting(false)
+    }
   }
 
   const handleDrop = (e) => {
@@ -134,7 +194,9 @@ export default function QuotationForm({ open, setOpen, onSuccess }) {
             </svg>
           </div>
           <div>
-            <DialogTitle className="text-sm font-bold text-gray-900 dark:text-white">New Quotation</DialogTitle>
+            <DialogTitle className="text-sm font-bold text-gray-900 dark:text-white">
+              {quotationId ? "Edit Quotation" : "New Quotation"}
+            </DialogTitle>
             <DialogDescription className="text-xs text-gray-400 dark:text-gray-500">Fill in the details and attach a document</DialogDescription>
           </div>
         </div>
@@ -142,10 +204,35 @@ export default function QuotationForm({ open, setOpen, onSuccess }) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
 
+          {/* Client Selection */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-500 dark:text-gray-400">
+              Assign To Client *
+            </label>
+            <select
+              value={form.recipientUserId}
+              onChange={(e) => setForm({ ...form, recipientUserId: e.target.value })}
+              required
+              className="w-full h-10 px-3 rounded-lg text-sm outline-none transition-all
+                bg-gray-50 dark:bg-white/5
+                border border-gray-200 dark:border-white/10
+                text-gray-900 dark:text-white
+                focus:border-gray-400 dark:focus:border-white/30
+                focus:ring-2 focus:ring-gray-100 dark:focus:ring-white/10"
+            >
+              <option value="" className="bg-gray-900 text-white dark:bg-black">Select a client</option>
+              {clients.map((client) => (
+                <option key={client._id} value={client._id} className="bg-gray-900 text-white dark:bg-black">
+                  {client.name} ({client.email})
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Title */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-gray-500 dark:text-gray-400">
-              Title
+              Title *
             </label>
             <input
               type="text"
@@ -252,6 +339,13 @@ export default function QuotationForm({ open, setOpen, onSuccess }) {
             )}
           </div>
 
+          {/* Error message */}
+          {error && (
+            <div className="px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30">
+              <p className="text-xs font-semibold text-red-700 dark:text-red-400">{error}</p>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3 pt-1">
             <button
@@ -265,7 +359,7 @@ export default function QuotationForm({ open, setOpen, onSuccess }) {
                   <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                 </svg>
               )}
-              {submitting ? "Submitting…" : "Submit Quotation"}
+              {submitting ? "Saving…" : quotationId ? "Update Quotation" : "Submit Quotation"}
             </button>
             <button
               type="button"

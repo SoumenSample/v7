@@ -11,10 +11,8 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    console.log("SESSION USERS API:", session);
-
     if (!session?.user?.id) {
-      return Response.json({ users: [] }); // NO 401
+      return Response.json({ users: [] });
     }
 
     await connectToDatabase();
@@ -45,8 +43,12 @@ export async function GET() {
           seen: false,
         });
 
+        const userObj = u.toObject();
         return {
-          ...u.toObject(),
+          _id: userObj._id,
+          name: userObj.name,
+          email: userObj.email,
+          role: userObj.role,
           unread,
         };
       })
